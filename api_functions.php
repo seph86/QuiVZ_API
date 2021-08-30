@@ -5,6 +5,23 @@
  */
 $functions = [];
 
+// User functions
+$functions["user"] = [];
+
+// /user/register
+$functions["user"]["register"] = function() {
+  send_data(OK,"Hi");
+};
+
+
+// /user/login
+$functions["user"]["login"] = function() {
+  send_data(OK, "Logged in!");
+};
+
+
+// ========== Testing functions onwards ==============
+
 $functions["success"] = function () {
   send_data(OK, "Successful");
 };
