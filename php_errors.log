@@ -1,0 +1,8 @@
+[30-Aug-2021 12:17:28 Australia/Melbourne] PHP Warning:  Undefined array key "somethingsomwhere" in /home/seph/Documents/TAFE/WebsiteDev/Sem2/Assessments/Proj2/api.php on line 33
+[30-Aug-2021 12:51:05 Australia/Melbourne] PHP Warning:  Undefined array key 0 in /home/seph/Documents/TAFE/WebsiteDev/Sem2/Assessments/Proj2/router.php on line 10
+[30-Aug-2021 12:51:11 Australia/Melbourne] PHP Warning:  Undefined array key 0 in /home/seph/Documents/TAFE/WebsiteDev/Sem2/Assessments/Proj2/router.php on line 10
+[30-Aug-2021 12:51:52 Australia/Melbourne] PHP Warning:  Undefined array key 0 in /home/seph/Documents/TAFE/WebsiteDev/Sem2/Assessments/Proj2/router.php on line 10
+[30-Aug-2021 12:51:52 Australia/Melbourne] PHP Warning:  Undefined variable $action in /home/seph/Documents/TAFE/WebsiteDev/Sem2/Assessments/Proj2/router.php on line 19
+[30-Aug-2021 12:53:42 Australia/Melbourne] PHP Warning:  Undefined array key 1 in /home/seph/Documents/TAFE/WebsiteDev/Sem2/Assessments/Proj2/router.php on line 12
+[30-Aug-2021 12:53:42 Australia/Melbourne] PHP Warning:  Undefined variable $command in /home/seph/Documents/TAFE/WebsiteDev/Sem2/Assessments/Proj2/router.php on line 17
+[30-Aug-2021 12:54:02 Australia/Melbourne] PHP Warning:  Undefined array key 1 in /home/seph/Documents/TAFE/WebsiteDev/Sem2/Assessments/Proj2/router.php on line 12
