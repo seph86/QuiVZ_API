@@ -4,7 +4,7 @@
 $logger = new PDO("sqlite:./log.db");
 
 //TODO: Change these from superglobals to...what?
-$query = $logger->prepare("insert into log (timestamp, IP, action, post) values (:now, :IP, :action, :post);");
+$query = $logger->prepare("insert into log (timestamp, IP, action, post, session, userID) values (:now, :IP, :action, :post, :session, :userID);");
 
 $now = time();
 $query->bindParam(":now", $now);
@@ -12,8 +12,10 @@ $query->bindParam(":IP", $_SERVER["REMOTE_ADDR"]);
 $query->bindParam(":action", $_SERVER["REQUEST_URI"]);
 $postData = json_encode($_POST);
 $query->bindParam(":post", $postData);
-//TODO: Session
-//TODO: User
+$sessionid = session_id();
+$query->bindParam(":session", $sessionid);
+$userID = isset($_SESSION["userID"]) ? $_SESSION["userID"] : "";
+$query->bindParam(":userID", $userID);
 
 $query->execute();
 

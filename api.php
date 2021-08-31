@@ -1,19 +1,26 @@
 <?php 
 
+// ====================== DEVELOPMENT PURPOSES ========================== TODO: remove this in production
+session_save_path(getcwd()."/temp/");
+
+// Typical PHP stuff
+session_start();
+
 // Include and start the logging system
 include "logger.php";
 
 // Quick global definitions
 define("OK",200);
 define("BAD", 400);
-define("NOTFOUND", 404);
+define("UNAUTHORIZED", 401);
 define("FORBIDDEN",403);
+define("NOTFOUND", 404);
+define("TOOMANY", 429);
 
 // Extract URI elements into an array (empty elements excluded, then reindex)
 $input = array_values(array_filter(explode("/",$_SERVER["REQUEST_URI"]), 'strlen'));
 
-// Typical PHP stuff
-session_start();
+// Connect to the quiz db
 $quizDB = new PDO("sqlite:./quiz.db");
 
 /**
