@@ -85,7 +85,11 @@ $functions["user"]["login"] = function(&$db) {
 };
 
 
+
+// TODO: remove these
+// ===================================================
 // ========== Testing functions onwards ==============
+// ===================================================
 
 $functions["success"] = function () {
   send_data(OK, "Successful");
