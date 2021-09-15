@@ -12,7 +12,9 @@ $functions["user"] = [];
 $functions["user"]["register"] = function(&$db) {
   if (isset($_POST["password"])) {
 
-    // Validate password, at least 15 characters, one digit and at least 1 uppercase and lowercase character
+    // Validate password, at least 15 characters, one digit and at least 1 uppercase and lowercase character.
+    // No symboles because this app is meant to be used on mobile, entering symboles on a phone
+    // keyboard is annoying
     if (preg_match("/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d]{15,}$/", $_POST["password"]) !== 1) {
       send_data(BAD,"Password needs to be 15 characters and one digit, uppercase character, and lowercase character");
     }
@@ -20,8 +22,8 @@ $functions["user"]["register"] = function(&$db) {
     // Hash a the ugly as sin php UUID. Salting is absolutely not necessary but I want too.
     $uuid = hash("sha256",uniqid("",true)."some interesting salt");
 
-    // should never need to check if user exists as uuid should never be a duplicate... "should"
-    // there is a chance though.  1 / 1.1579x10⁷⁷ .... yeeeah.
+    // Should never need to check if user exists as uuid should never be a duplicate... "should".
+    // There is a chance though.  1 / 1.1579x10⁷⁷ .... yeeeah.
     $query = $db->prepare("insert into users (uuid, password) values (:uuid, :password)");
     $query->bindParam(":uuid", $uuid);
     $newPass = password_hash($_POST["password"],PASSWORD_DEFAULT);
@@ -43,8 +45,7 @@ $functions["user"]["register"] = function(&$db) {
 $functions["user"]["login"] = function(&$db) {
 
   // Check user is not already logged in
-  if (isset($_SESSION["uuid"]))
-    send_data(FORBIDDEN, "You are already logged in");
+  if (isset($_SESSION["uuid"])) send_data(FORBIDDEN, "You are already logged in");
 
   // Check post data
   if (!isset($_POST["password"])) send_data(BAD, "Password required");
@@ -65,11 +66,10 @@ $functions["user"]["login"] = function(&$db) {
 
   // If user doesnt exist
   if (!isset($result[0])) {
-    
     send_data(BAD, "Invalid credentials"); 
-  
   }
 
+  // Check password is correct
   if (password_verify($_POST["password"], $result[0]["password"])) {
     
     $_SESSION["uuid"] = $_POST["uuid"];
@@ -85,45 +85,22 @@ $functions["user"]["login"] = function(&$db) {
 };
 
 
+// /user/logout
+$functions["user"]["logout"] = function(&$db) {
 
-// TODO: remove these
-// ===================================================
-// ========== Testing functions onwards ==============
-// ===================================================
+  // If there is no user logged in
+  if (!isset($_SESSION["uuid"])) send_data(BAD, "You are not currently logged in");
 
-$functions["success"] = function () {
-  send_data(OK, "Successful");
+  // Log out but keep session data
+  $_SESSION["uuid"] = null;
+  send_data(OK, "Successfully logged out");
+
 };
 
-$functions["restricted"] = function() {
-  send_data(FORBIDDEN, "You are not allowed to do this");
-};
 
-$functions["logged_in"] = function() {
-  if (isset($_SESSION["user"]))
-    send_data(OK, "You are logged in");
-  else 
-    send_data(NOTFOUND, "You are not");
-};
-
-$functions["login"] = function() {
-  // send_data(200, var_dump($_POST)); die;
-  if (empty($_POST["username"]) || empty($_POST["password"])) {
-    send_data(BAD, "username or password not filled");
-  } else {
-    if ($_POST["username"] == "asdf" && $_POST["password"] == "asdf") {
-      $_SESSION["user"] = "asdf";
-      send_data(OK, "Logged in!");
-    } else {
-      send_data(406, "User credentials are incorrect");
-    }
-  }
-};
-
-$functions["logout"] = function() {
-  session_destroy();
-  send_data(OK, "You successfully logged out");
-};
+// =======================================================
+// ========== Old testing functions onwards ==============
+// =======================================================
 
 $functions["teapot"] = function() {
   send_data(418, "I am a teapot");
@@ -131,10 +108,5 @@ $functions["teapot"] = function() {
 
 $functions["delay"] = function() {
   sleep(rand(0,3));
-  send_data(OK,"Delay");
-};
-
-$functions["event"] = function(PDO &$conn) {
-  send_data(OK, "Event Sent");
-  $conn->exec("update users set fire = 1 where id = 0");
+  send_data(BAD,"Delay");
 };

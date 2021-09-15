@@ -10,7 +10,10 @@ $now = time();
 $query->bindParam(":now", $now);
 $query->bindParam(":IP", $_SERVER["REMOTE_ADDR"]);
 $query->bindParam(":action", $_SERVER["REQUEST_URI"]);
-$postData = json_encode($_POST);
+$postData = $_POST;
+// remove password from post before logging the data
+if (isset($postData["password"])) $postData["password"] = "[redacted]";
+$postData = json_encode($postData);
 $query->bindParam(":post", $postData);
 $sessionid = session_id();
 $query->bindParam(":session", $sessionid);

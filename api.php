@@ -1,6 +1,7 @@
 <?php 
 
-// ====================== DEVELOPMENT PURPOSES ========================== TODO: remove this in production
+// TODO: remove this in production
+// ====================== DEVELOPMENT PURPOSES ========================== 
 session_save_path(getcwd()."/temp/");
 
 // Typical PHP stuff
@@ -17,8 +18,36 @@ define("FORBIDDEN",403);
 define("NOTFOUND", 404);
 define("TOOMANY", 429);
 
+// Rate limit requests from a single ip to 5 requests per second by counting log requests
+$query = $logger->query("select count(timestamp) from log where IP = \"" . $_SERVER["REMOTE_ADDR"] . "\" and  timestamp = \"" . time() . "\"");
+if (intval($query->fetch()[0]) > 5) send_data(TOOMANY);
+
+// Rate limit requests from a single session to 1000 per 24 hours
+if (isset($_SESSION["request_reset_timestamp"])) {
+
+  // Increment counter
+  if (isset($_SESSION["request_count"])) 
+    $_SESSION["request_count"] = $_SESSION["request_count"] + 1;
+  else
+    $_SESSION["request_count"] = 1;
+
+  // Is the session still within the time before reset and counter is over 1000
+  if ($_SESSION["request_reset_timestamp"] > time() && $_SESSION["request_count"] > 999) 
+    send_data(TOOMANY);
+  
+  // Reset items if 
+  if (time() > $_SESSION["request_reset_timestamp"]) {
+    $_SESSION["request_reset_timestamp"] = strtotime("+1 day", time());
+    $_SESSION["request_count"] = 0;
+  }
+
+} else {
+  $_SESSION["request_reset_timestamp"] = strtotime("+1 day", time());
+}
+
 // Extract URI elements into an array (empty elements excluded, then reindex)
 $input = array_values(array_filter(explode("/",$_SERVER["REQUEST_URI"]), 'strlen'));
+
 
 // Connect to the quiz db
 $quizDB = new PDO("sqlite:./quiz.db");
@@ -26,9 +55,16 @@ $quizDB = new PDO("sqlite:./quiz.db");
 /**
  * Send json encoded data back to connected client, then exit process
  */
-function send_data(int $code, string $message, $data = null) {
+function send_data(int $code, string $message = "", $data = null) {
   
   http_response_code($code);
+
+  if ($code == TOOMANY && $message == "") {
+    $message = "Too many requests";
+  } else if($code == FORBIDDEN && $message == "") {
+    $message = "You are not allowed to do this";
+  }
+
   $temp = ["message"=>$message];
 
   appendResponse($code);
@@ -39,6 +75,7 @@ function send_data(int $code, string $message, $data = null) {
   echo json_encode($temp) . "\n";
   die();
 }
+
 
 
 // Load list of functions
