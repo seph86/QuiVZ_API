@@ -86,7 +86,7 @@ $functions["user"]["login"] = function(&$db) {
 
 
 // /user/logout
-$functions["user"]["logout"] = function(&$db) {
+$functions["user"]["logout"] = function() {
 
   // If there is no user logged in
   if (!isset($_SESSION["uuid"])) send_data(BAD, "You are not currently logged in");

@@ -4,6 +4,10 @@
 # This is a test script to verify api functions are functional
 # ============================================================
 
+# file locations
+cookies_file="$(dirname -- "$0")/cookies"
+output_file="$(dirname -- "$0")/output"
+
 # set default options
 host="127.0.0.1"
 port="8080"
@@ -29,6 +33,7 @@ help() {
   echo "-v        : Print more sh*t"
   echo "-r        : Print json responses"
   echo "-k        : Keep cookie data, do not delete after script is finished"
+  echo "-t        : Are you a teapot?"
 }
 
 # test curl response against expected value
@@ -36,7 +41,7 @@ test() {
   # Print output if there is any
   if [[ $verbose = "true" || $output = "true" ]]; then
     echo -n "Output = "
-    cat ./output
+    cat $output_file
   fi
 
   # Increment counters and print result
@@ -56,7 +61,7 @@ test() {
 # Process args
 while (( $# )); do
   case $1 in
-    -h|--help) 
+    -h|--help)
       help 
       exit 1
       ;;
@@ -80,7 +85,11 @@ while (( $# )); do
     -k)
       retain_cookies=true
       ;;
-    *) 
+    -t)
+      curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s --header Origin:$protocol$host:$port $protocol$host:$port/teapot/
+      exit 418
+      ;;
+    *)
       echo "Unknown switch: \"$1\", use -h or --help for a list of switches"
       exit 1
       ;;
@@ -90,15 +99,50 @@ while (( $# )); do
 
 done
 
+# Set command
+cmd="curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s -w %{HTTP_CODE} $([[ $verbose = "true" || $output = "true" ]] && echo "-o $output_file" || echo "-o /dev/null" ) --header Origin:$protocol$host:$port $protocol$host:$port"
+#echo $cmd"/debug/" ; exit 1
+
+echo "Testing $host:$port .... "
+echo "-----------------------------------"
+
+# -----------------------------------------------------------
+# Test API integrity
+# -----------------------------------------------------------
+
+# Test server rate limiting
+echo "Testing rate limiting..."
+$cmd > /dev/null
+$cmd > /dev/null
+$cmd > /dev/null
+$cmd > /dev/null
+$cmd > /dev/null
+$cmd > /dev/null
+$cmd > /dev/null
+$cmd > /dev/null
+$cmd > /dev/null
+$cmd > /dev/null
+response=`$cmd`
+test 429 $response
+sleep 1
+
+# Test origin
+echo "Testing no header origin"
+response=$(curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s -w %{HTTP_CODE} $([[ $verbose = "true" || $output = "true" ]] && echo "-o $output_file" || echo "-o /dev/null" ) $protocol$host:$port)
+test 400 $response
+sleep 0.5
+
+# Test invalid origin
+echo "Testing invalid origin"
+response=$(curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s -w %{HTTP_CODE} $([[ $verbose = "true" || $output = "true" ]] && echo "-o $output_file" || echo "-o /dev/null" ) $protocol$host:$port --header Origin:http://example.com)
+test 400 $response
+sleep 0.5
+
+
 # -----------------------------------------------------------
 # Test functions
 # -----------------------------------------------------------
 
-cmd="curl $([[ $verbose = "true" ]] && echo "-v") -c cookie.jar -b cookie.jar -s -w %{HTTP_CODE} $([[ $verbose = "true" || $output = "true" ]] && echo "-o ./output" || echo "-o /dev/null" ) $protocol$host:$port"
-#echo $cmd ; exit 1
-
-echo "Testing $host:$port .... "
-echo "-----------------------------------"
 # Test no action and get sesssion id
 echo "Testing no action to API..."
 response=`$cmd`
@@ -129,20 +173,7 @@ response=`$cmd/user/logout`
 test 400 $response
 sleep 0.5
 
-echo "Testing rate limiting..."
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-response=`$cmd`
-test 429 $response
-sleep 1
+
 
 # ----------------------------------------------
 # functions after logged in
@@ -160,6 +191,7 @@ response=`$cmd/user/logout`
 test 200 $response
 sleep 0.5
 
+
 # Final statistics
 echo ""
 echo "Total tests: $test_count"
@@ -168,9 +200,9 @@ printf %.0f%%\\n "$((10**3 * $test_success / $test_count ))e-1"
 
 
 #cleanup
-if [[ -f "./cookie.jar" && $retain_cookies = "false" ]]; then
-  rm ./cookie.jar
+if [[ -f $cookies_file && $retain_cookies = "false" ]]; then
+  rm $cookies_file
 fi
-if [ -f "./output" ]; then
-  rm ./output
+if [ -f $output_file ]; then
+  rm $output_file
 fi

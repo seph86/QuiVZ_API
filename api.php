@@ -10,17 +10,14 @@ session_start();
 // Include and start the logging system
 include "logger.php";
 
-// Quick global definitions
-define("OK",200);
-define("BAD", 400);
-define("UNAUTHORIZED", 401);
-define("FORBIDDEN",403);
-define("NOTFOUND", 404);
-define("TOOMANY", 429);
+// Include some multipurpose functions and definitions
+include "global_functions.php";
+
 
 // Rate limit requests from a single ip to 5 requests per second by counting log requests
 $query = $logger->query("select count(timestamp) from log where IP = \"" . $_SERVER["REMOTE_ADDR"] . "\" and  timestamp = \"" . time() . "\"");
 if (intval($query->fetch()[0]) > 5) send_data(TOOMANY);
+
 
 // Rate limit requests from a single session to 1000 per 24 hours
 if (isset($_SESSION["request_reset_timestamp"])) {
@@ -45,37 +42,18 @@ if (isset($_SESSION["request_reset_timestamp"])) {
   $_SESSION["request_reset_timestamp"] = strtotime("+1 day", time());
 }
 
+
+// Limit requests from only specific origins
+if (!isset($_SERVER["HTTP_ORIGIN"]) || !array_key_exists($_SERVER["HTTP_ORIGIN"], $origin_whitelist)){
+  send_data(BAD);
+} 
+
 // Extract URI elements into an array (empty elements excluded, then reindex)
 $input = array_values(array_filter(explode("/",$_SERVER["REQUEST_URI"]), 'strlen'));
 
 
 // Connect to the quiz db
 $quizDB = new PDO("sqlite:./quiz.db");
-
-/**
- * Send json encoded data back to connected client, then exit process
- */
-function send_data(int $code, string $message = "", $data = null) {
-  
-  http_response_code($code);
-
-  if ($code == TOOMANY && $message == "") {
-    $message = "Too many requests";
-  } else if($code == FORBIDDEN && $message == "") {
-    $message = "You are not allowed to do this";
-  }
-
-  $temp = ["message"=>$message];
-
-  appendResponse($code);
-
-  if ($data != null) {
-    array_push($temp,["data" => $data]);
-  }
-  echo json_encode($temp) . "\n";
-  die();
-}
-
 
 
 // Load list of functions
