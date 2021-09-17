@@ -5,7 +5,11 @@
 session_save_path(getcwd()."/temp/");
 
 // Typical PHP stuff
+// We need to start the session engine early because we need that information asap
 session_start();
+
+// Capture the time the user was last active as a timestamp
+$session_inactivty = time() - filemtime(session_save_path()."sess_".session_id());
 
 // Include and start the logging system
 include "logger.php";
@@ -13,10 +17,20 @@ include "logger.php";
 // Include some multipurpose functions and definitions
 include "global_functions.php";
 
+// Set the response header to JSON content type
+header("Content-Type: text/json");
 
-// Rate limit requests from a single ip to 5 requests per second by counting log requests
+// Check last time the session had any activity, if it's longer then 2 hours. Log out the user
+if ($session_inactivty > 7200) {
+  $_SESSION["uuid"] = null;
+  $_SESSION["admin"] = null;
+  send_data(TIMEOUT, "Session expired");
+}
+
+
+// Rate limit requests from a single ip to 4 requests per second by counting log requests
 $query = $logger->query("select count(timestamp) from log where IP = \"" . $_SERVER["REMOTE_ADDR"] . "\" and  timestamp = \"" . time() . "\"");
-if (intval($query->fetch()[0]) > 5) send_data(TOOMANY);
+if (intval($query->fetch()[0]) > 4) send_data(TOOMANY);  // Are there more than 4 requests in the last second?
 
 
 // Rate limit requests from a single session to 1000 per 24 hours
@@ -48,23 +62,23 @@ if (!isset($_SERVER["HTTP_ORIGIN"]) || !array_key_exists($_SERVER["HTTP_ORIGIN"]
   send_data(BAD);
 } 
 
+
+// ---------------------------------------
+// Begin processing API requests
+// ---------------------------------------
+
 // Extract URI elements into an array (empty elements excluded, then reindex)
 $input = array_values(array_filter(explode("/",$_SERVER["REQUEST_URI"]), 'strlen'));
 
-
-// Connect to the quiz db
+// Connect to the quiz db once early verification tests are completed
 $quizDB = new PDO("sqlite:./quiz.db");
 
-
 // Load list of functions
-include "api_functions.php";
-
-// Set the header to JSON content type
-header("Content-Type: text/json");
+include "./api/api_functions.php";
 
 // Check that there has been a API request
 if (!isset($input[0])) {
-  send_data(BAD, "Invalid request");
+  send_data(BAD);
 }
 
 // Process input logic
@@ -72,7 +86,7 @@ while(1) {
 
   // Check the item we are processing exists first
   if (!isset($functions[$input[0]]))
-    send_data(BAD, "Invalid request"); // The API has been used incorrectly
+    send_data(BAD); // The API has been used incorrectly
 
   // Does the item point to an array?
   if ( is_array($functions[$input[0]]) ) {

@@ -11,13 +11,15 @@ $query->bindParam(":now", $now);
 $query->bindParam(":IP", $_SERVER["REMOTE_ADDR"]);
 $query->bindParam(":action", $_SERVER["REQUEST_URI"]);
 $postData = $_POST;
-// remove password from post before logging the data
+// remove passwords from post data before logging
 if (isset($postData["password"])) $postData["password"] = "[redacted]";
+if (isset($postData["oldpassword"])) $postData["oldpassword"] = "[redacted]";
+if (isset($postData["newpassword"])) $postData["newpassword"] = "[redacted]";
 $postData = json_encode($postData);
 $query->bindParam(":post", $postData);
 $sessionid = session_id();
 $query->bindParam(":session", $sessionid);
-$userID = isset($_SESSION["userID"]) ? $_SESSION["userID"] : "";
+$userID = isset($_SESSION["uuid"]) ? $_SESSION["uuid"] : "";
 $query->bindParam(":userID", $userID);
 
 $query->execute();

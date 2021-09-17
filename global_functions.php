@@ -6,7 +6,9 @@ define("BAD", 400);
 define("UNAUTHORIZED", 401);
 define("FORBIDDEN",403);
 define("NOTFOUND", 404);
+define("TIMEOUT", 408);
 define("TOOMANY", 429);
+
 
 // Allowed origins
 $origin_whitelist = Array(
@@ -27,7 +29,8 @@ function send_data(int $code, string $message = "", $data = null) {
   $response_code_messages = Array(
     BAD => "Invalid Request",
     FORBIDDEN => "You are not allowed to do this",
-    TOOMANY => "Too many requests"
+    TOOMANY => "Too many requests",
+    UNAUTHORIZED => "You are not allowed to do this"
   );
 
   // Set response code

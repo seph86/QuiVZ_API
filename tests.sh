@@ -4,6 +4,9 @@
 # This is a test script to verify api functions are functional
 # ============================================================
 
+# It was a mistake to make such a complex script in bash...
+# I should of used python.
+
 # file locations
 cookies_file="$(dirname -- "$0")/cookies"
 output_file="$(dirname -- "$0")/output"
@@ -15,10 +18,12 @@ protocol="http://"
 verbose=false
 output=false
 retain_cookies=false
+skip_ratelimit=false
+curl_data=""
 
 user="65a6fc4a8551e48fd5a9fcafe9cfb5a35df0782551d870951ec6457e7dee0924"
 pass="StrongPassword01"
-
+pass2="StrongPassword02"
 test_count=0
 test_success=0
 
@@ -33,6 +38,11 @@ help() {
   echo "-v        : Print more sh*t"
   echo "-r        : Print json responses"
   echo "-k        : Keep cookie data, do not delete after script is finished"
+  echo "-sr       : Skip rate limiting"
+  echo "-l        : Login (best used with -k) then exit"
+  echo "-L        : Logout then exit"
+  echo "-d [data] : Set curl data (set before -c)"
+  echo "-c [cmd]  : Test single api command [cmd]"
   echo "-t        : Are you a teapot?"
 }
 
@@ -56,6 +66,9 @@ test() {
 
   # pretty output by putting a empty line at the end 
   if [[ $verbose = "true" || $output = "true" ]]; then echo "" ; fi
+
+  # Safety to not trigger the rate limiter.
+  sleep 0.5
 }
 
 # Process args
@@ -89,6 +102,25 @@ while (( $# )); do
       curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s --header Origin:$protocol$host:$port $protocol$host:$port/teapot/
       exit 418
       ;;
+    -sr)
+      skip_ratelimit=true
+      ;;
+    -l)
+      curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s --header Origin:$protocol$host:$port $protocol$host:$port/user/login/ -d "uuid=$user&password=$pass"
+      exit 0;
+      ;;
+    -L)
+      curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s --header Origin:$protocol$host:$port $protocol$host:$port/user/logout/
+      exit 0;
+      ;;
+    -d)
+      curl_data=$2
+      shift 1
+      ;;
+    -c)
+      curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s --header Origin:$protocol$host:$port $protocol$host:$port/$2 $([[ $curl_data != "" ]] && echo "-d $curl_data")
+      exit 0;
+      ;;
     *)
       echo "Unknown switch: \"$1\", use -h or --help for a list of switches"
       exit 1
@@ -110,33 +142,32 @@ echo "-----------------------------------"
 # Test API integrity
 # -----------------------------------------------------------
 
-# Test server rate limiting
-echo "Testing rate limiting..."
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-$cmd > /dev/null
-response=`$cmd`
-test 429 $response
-sleep 1
+if [[ $skip_ratelimit == "false" ]]; then
+  # Test server rate limiting
+  echo "Testing rate limiting..."
+  $cmd > /dev/null
+  $cmd > /dev/null
+  $cmd > /dev/null
+  $cmd > /dev/null
+  $cmd > /dev/null
+  $cmd > /dev/null
+  $cmd > /dev/null
+  $cmd > /dev/null
+  $cmd > /dev/null
+  $cmd > /dev/null
+  response=`$cmd`
+  test 429 $response
+  sleep 1
+fi
 
 # Test origin
 echo "Testing no header origin"
-response=$(curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s -w %{HTTP_CODE} $([[ $verbose = "true" || $output = "true" ]] && echo "-o $output_file" || echo "-o /dev/null" ) $protocol$host:$port)
-test 400 $response
+test 400 $(curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s -w %{HTTP_CODE} $([[ $verbose = "true" || $output = "true" ]] && echo "-o $output_file" || echo "-o /dev/null" ) $protocol$host:$port)
 sleep 0.5
 
 # Test invalid origin
 echo "Testing invalid origin"
-response=$(curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s -w %{HTTP_CODE} $([[ $verbose = "true" || $output = "true" ]] && echo "-o $output_file" || echo "-o /dev/null" ) $protocol$host:$port --header Origin:http://example.com)
-test 400 $response
-sleep 0.5
+test 400 $(curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s -w %{HTTP_CODE} $([[ $verbose = "true" || $output = "true" ]] && echo "-o $output_file" || echo "-o /dev/null" ) $protocol$host:$port --header Origin:http://example.com)
 
 
 # -----------------------------------------------------------
@@ -145,33 +176,31 @@ sleep 0.5
 
 # Test no action and get sesssion id
 echo "Testing no action to API..."
-response=`$cmd`
-test 400 $response
-sleep 0.5
-
-# Testing old function
-echo "Testing delay function..."
-response=`$cmd/delay`
-test 400 $response
-sleep 0.5
+test 400 $($cmd)
 
 # Test login, no credentials
 echo "Testing login with no credentials..."
-response=`$cmd/user/login`
-test 400 $response
-sleep 0.5
+test 400 $($cmd/user/login)
 
 # Test login, wrong password
 echo "Testing login, wrong password..."
-response=`$cmd/user/login -d "uuid=$user&password=wrongpassword"`
-test 400 $response
-sleep 0.5
+test 400 $($cmd/user/login -d "uuid=$user&password=wrongpassword")
 
 # Test logout, not logged in
 echo "Testing logout, not logged in..."
-response=`$cmd/user/logout`
-test 400 $response
-sleep 0.5
+test 400 $($cmd/user/logout)
+
+# Test changing password, not logged in
+echo "Testing change password, not logged in ..."
+test 400 $($cmd/user/newpassword)
+
+# Test searching for category when not logged in
+echo "Testing searching categories ..."
+test 401 $($cmd/category/search)
+
+# Test creating new category when not logged in
+echo "Testing creating a new category ..."
+test 401 $($cmd/category/create)
 
 
 
@@ -179,17 +208,86 @@ sleep 0.5
 # functions after logged in
 # ----------------------------------------------
 
+echo ""
+echo "Testing functions while authenticated...."
+echo "--------------------------------------------------------"
+
 # Test login, correct password
 echo "Testing login, correct password..."
-response=`$cmd/user/login -d "uuid=$user&password=$pass"`
-test 200 $response
-sleep 0.5
+test 200 $($cmd/user/login -d "uuid=$user&password=$pass")
+
+# Testing change password with no data
+echo "Testing changing password, no data ..."
+test 400 $($cmd/user/newpassword)
+
+# Testing change password, no new password
+echo "Testing changing password, no new password ..."
+test 400 $($cmd/user/newpassword -d "oldpassword=old")
+
+# Testing change password, no old password
+echo "Testing changing password, no old password ..."
+test 400 $($cmd/user/newpassword -d "newpassword=old")
+
+# Testing change password, passwords match
+echo "Testing changing password, identicle passwords"
+test 400 $($cmd/user/newpassword -d "oldpassword=old&newpassword=old")
+
+# Testing change password, wrong old password
+echo "Testing changing password, incorrect old password ..."
+test 400 $($cmd/user/newpassword -d "oldpassword=old&newpassword=newpassword")
+
+# Testing change password
+echo "Testing changing password, incorrect old password ..."
+test 200 $($cmd/user/newpassword -d "oldpassword=$pass&newpassword=$pass2")
+
+# Changing password back
+echo "Setting password back to old"
+$cmd"/user/newpassword" -d "oldpassword=$pass2&newpassword=$pass" > /dev/null
+
+# Test searching for category without entering a search param
+echo "Testing searching for category with null data ..."
+test 400 $($cmd/category/search)
+
+# Test again but with data
+echo "Testing searching for category with data ..."
+test 200 $($cmd/category/search -d "query=test")
+
+# Test creating a new category without a name
+echo "Testing creating a new category, no name ..."
+test 400 $($cmd/category/create)
+
+# Test creating a new category with an invalid name
+echo "Testing creating a new category, invalid name ..."
+test 400 $($cmd/category/create -d "name=A!@#  ^  --B")
+
+# Test creating a new category with a name that has too many characters
+echo "Testing creating a new category, too many characters in name ..."
+test 400 $($cmd/category/create -d "name=NHZTZX0XQL5iulSmvFkCvN15KWbEU2akqWt4qTB4HLLLH1pT4JESmMpGnvfMi1Lr71IJyZEc75i860rA4z0TGsSO0tCu8jvmDoiXtxGqb2EiSqtkHogInPVqE7DpbuaET9hSuyFGQ750hx8p2uhTqbJ")
+
+# Test creating a new category
+echo "Testing creating a new category ..."
+test 200 $($cmd/category/create -d "name=testing1234554321")
+
+# Test creating a new category with a name that already exists
+echo "Creating same category again ..."
+test 400 $($cmd/category/create -d "name=testing1234554321")
+
+# Testing admin, delete category
+echo "Deleting a category that exists ..."
+test 200 $($cmd/category/delete -d "name=testing1234554321")
+
+# Testing admin, delete a category that doesnt exist
+echo "Deleting a category that doesnt exist ..."
+test 400 $($cmd/category/delete -d "name=testing1234554321")
+
+# Testing admin, delete a category with no input
+echo "Deleting a category with no input ..."
+test 400 $($cmd/category/delete)
+
 
 # Test logout, user logged in
-echo "Testing logout"
-response=`$cmd/user/logout`
-test 200 $response
-sleep 0.5
+echo "Testing logout ..."
+test 200 $($cmd/user/logout)
 
 
 # Final statistics
