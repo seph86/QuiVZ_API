@@ -15,7 +15,10 @@ $origin_whitelist = Array(
   "http://localhost:".$_SERVER["SERVER_PORT"] => true,
   "http://127.0.0.1:".$_SERVER["SERVER_PORT"] => true,
   "https://localhost:".$_SERVER["SERVER_PORT"] => true,
-  "https://127.0.0.1:".$_SERVER["SERVER_PORT"] => true
+  "https://127.0.0.1:".$_SERVER["SERVER_PORT"] => true,
+  //Testing
+  "http://127.0.0.1:3000"=>true,
+  "http://localhost:3000"=>true
 );
 
 

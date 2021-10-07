@@ -3,6 +3,7 @@
 // TODO: remove this in production
 // ====================== DEVELOPMENT PURPOSES ========================== 
 session_save_path(getcwd()."/temp/");
+header("Access-Control-Allow-Origin: *");
 
 // Typical PHP stuff
 // We need to start the session engine early because we need that information asap
