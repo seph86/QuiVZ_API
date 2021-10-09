@@ -26,6 +26,8 @@ $functions["user"]["register"] = function(&$db) {
 
     $query->execute();
 
+	$_SESSION["uuid"] = $uuid;
+
     send_data(OK, "Successfully created user", ["UUID" => $uuid, "token" => session_id()]);
 
   } else {
