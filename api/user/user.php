@@ -26,7 +26,7 @@ $functions["user"]["register"] = function(&$db) {
 
     $query->execute();
 
-    send_data(OK, "Successfully created user", ["UUID" => $uuid]);
+    send_data(OK, "Successfully created user", ["UUID" => $uuid, "token" => session_id()]);
 
   } else {
 
@@ -73,7 +73,7 @@ $functions["user"]["login"] = function(&$db) {
     $_SESSION["uuid"] = $_POST["uuid"];
     if ($result[0]["admin"] == "1") $_SESSION["admin"] = true;
 
-    send_data(OK, "Logged in successfully");
+    send_data(OK, "Logged in successfully", ["token" => session_id()]);
 
   } else {
 
@@ -124,6 +124,16 @@ $functions["user"]["newpassword"] = function(&$db) {
 
 };
 
+// /user/loggedin
+$functions["user"]["loggedin"] = function() {
+
+  if (isset($_SESSION["uuid"]))
+    send_data(OK, "You are logged in", ["token" => session_id()]);
+  else 
+    send_data(BAD, "You are not currently logged in", ["token" => session_id()]);
+
+};
+
 // /user/logout
 $functions["user"]["logout"] = function() {
 
@@ -131,8 +141,7 @@ $functions["user"]["logout"] = function() {
   if (!isset($_SESSION["uuid"])) send_data(BAD, "You are not currently logged in");
 
   // Log out but keep session data
-  $_SESSION["uuid"] = null;
-  $_SESSION["admin"] = null;
+  session_destroy();
   send_data(OK, "Successfully logged out");
 
 };
