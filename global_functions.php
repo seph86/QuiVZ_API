@@ -15,9 +15,15 @@ $origin_whitelist = Array(
   "http://localhost:".$_SERVER["SERVER_PORT"] => true,
   "http://127.0.0.1:".$_SERVER["SERVER_PORT"] => true,
   "https://localhost:".$_SERVER["SERVER_PORT"] => true,
-  "https://127.0.0.1:".$_SERVER["SERVER_PORT"] => true
+  "https://127.0.0.1:".$_SERVER["SERVER_PORT"] => true,
+  //Testing
+  "http://localhost:8000"=>true,
+  "http://127.0.0.1:8000"=>true,
+  "http://localhost:3000"=>true,
+  "https://localhost:8000"=>true,
+  "https://localhost:3000"=>true,
+  "https://192.168.2.2:8000"=>true
 );
-
 
 
 /**
@@ -49,6 +55,12 @@ function send_data(int $code, string $message = "", $data = null) {
   // If data is set append it to the JSON array
   if ($data != null) {
     array_push($temp,["data" => $data]);
+  }
+  
+  // Add debug information if enabled
+  if ( getenv("API_DEBUG", true) != false ) {
+    error_log("yo");
+    array_push($temp, debug_backtrace());
   }
 
   // Encode JSON data and send it

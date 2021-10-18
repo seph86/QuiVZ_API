@@ -18,6 +18,11 @@ include "./api/quiz/quiz.php";
 // =======================================================
 
 $functions["teapot"] = function() {
+
+  // Delete session if the token is not logged in
+  if (!isset($_SESSION["uuid"]))
+    session_destroy();
+
   send_data(418, "I am a teapot");
 };
 

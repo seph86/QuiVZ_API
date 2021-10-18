@@ -3,28 +3,45 @@
 // TODO: remove this in production
 // ====================== DEVELOPMENT PURPOSES ========================== 
 session_save_path(getcwd()."/temp/");
-if (!is_dir(session_save_path())) mkdir(session_save_path());
-
-// Typical PHP stuff
-// We need to start the session engine early because we need that information asap
-session_start();
-
-// Capture the time the user was last active as a timestamp
-$session_inactivty = time() - filemtime(session_save_path()."sess_".session_id());
-
-// Include and start the logging system
-include "logger.php";
+header("Access-Control-Allow-Origin: *");
 
 // Include some multipurpose functions and definitions
 include "global_functions.php";
 
+// We need to start the session engine early because we need that information asap
+ini_set("session.use_cookies", "0"); // We're going to work with tokens in localstorage. Not cookies
+$session_error = false;
+if (!isset($_POST["token"])) {
+  session_id(bin2hex(openssl_random_pseudo_bytes(8)));
+  session_start();
+  $_SESSION["remote_ip"] = $_SERVER["REMOTE_ADDR"];
+} else {
+  if ( !file_exists(session_save_path()."sess_".$_POST["token"]) ) {// Does session token exist
+    $session_error = true; // Set session error to be checked later
+    session_id("Invalid Token");
+  } else {
+    session_id($_POST["token"]);
+    session_start();
+  }
+  
+}
+
+// Include and start the logging system
+include "logger.php";
+
+// If an invalid token was used, respond now with with 400 after the logger has initialized.
+if ($session_error) send_data(BAD);
+
+// Capture the time the user was last active as a timestamp
+$session_inactivty = time() - filemtime(session_save_path()."sess_".session_id());
+
 // Set the response header to JSON content type
 header("Content-Type: text/json");
 
-// Check last time the session had any activity, if it's longer then 2 hours. Log out the user
-if ($session_inactivty > 7200) {
-  $_SESSION["uuid"] = null;
-  $_SESSION["admin"] = null;
+// Check last time the session had any activity, if it's longer then 2 hours. Log out the user.
+// Also log out the user if the ip has changed
+if ($session_inactivty > 7200 || $_SESSION["remote_ip"] != $_SERVER["REMOTE_ADDR"]) {
+  session_destroy();
   send_data(TIMEOUT, "Session expired");
 }
 

@@ -3,6 +3,25 @@
 // ============ Category functions =============
 $functions["category"] = [];
 
+// /category/getall/
+$functions["category"]["getall"] = function(&$db) {
+
+  // Check request came from an authenticated user first
+  if (!isset($_SESSION["uuid"])) send_data(UNAUTHORIZED);
+
+  // Search the list of categories
+  $query = $db->prepare("select name from categories");
+  $query->execute();
+
+  $output = Array();
+  foreach ($query->fetchAll() as $value) {
+    array_push($output, $value["name"]);
+  }
+
+  send_data(OK, "Categoies search result", $output);
+
+};
+
 // /category/search/
 $functions["category"]["search"] = function(&$db) {
 
