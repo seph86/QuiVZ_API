@@ -1,4 +1,4 @@
-# TAFE_Proj2
+# QuiVS API
 
 ## Requirements 
 - php
