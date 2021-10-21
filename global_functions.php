@@ -1,6 +1,8 @@
 <?php 
 
 // Quick global definitions
+
+// Response codes
 define("OK",200);
 define("BAD", 400);
 define("UNAUTHORIZED", 401);
@@ -9,6 +11,8 @@ define("NOTFOUND", 404);
 define("TIMEOUT", 408);
 define("TOOMANY", 429);
 
+// Misc
+define("ADM_SECRET", "b14f6c79f8ac"); // Secret key to hash with the UUID if the user is admin, result is stored client side
 
 // Allowed origins
 $origin_whitelist = Array(
@@ -22,7 +26,13 @@ $origin_whitelist = Array(
   "http://localhost:3000"=>true,
   "https://localhost:8000"=>true,
   "https://localhost:3000"=>true,
-  "https://192.168.2.2:8000"=>true
+  "https://192.168.2.2:8000"=>true,
+  "http://172.30.240.89:3000"=>true
+);
+
+// Restrict and privilages to those only on the following IPs
+$admin_ip_whitelist = Array(
+  "127.0.0.1"=>true
 );
 
 

@@ -1,0 +1,38 @@
+[21-Oct-2021 16:20:25 Australia/Melbourne] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:7
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(7): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(31): include('...')
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#3 {main}
+  thrown in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 7
+[21-Oct-2021 16:20:51 Australia/Melbourne] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:7
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(7): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(31): include('...')
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#3 {main}
+  thrown in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 7
+[21-Oct-2021 16:21:28 Australia/Melbourne] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:7
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(7): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(31): include('...')
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#3 {main}
+  thrown in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 7
+[21-Oct-2021 16:22:37 Australia/Melbourne] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:7
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(7): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(31): include('...')
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#3 {main}
+  thrown in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 7
+[21-Oct-2021 16:23:36 Australia/Melbourne] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:7
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(7): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(31): include('...')
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#3 {main}
+  thrown in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 7
+[21-Oct-2021 19:53:07 Australia/Melbourne] PHP Warning:  Undefined array key "admin" in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api/user/user.php on line 84
+[21-Oct-2021 20:11:30 Australia/Melbourne] 127.0.0.1
+[21-Oct-2021 20:16:18 Australia/Melbourne] PHP Warning:  Undefined array key "admin" in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api/user/user.php on line 85
