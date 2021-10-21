@@ -19,10 +19,12 @@ $functions["user"]["register"] = function(&$db) {
 
     // Should never need to check if user exists as uuid should never be a duplicate... "should".
     // There is a chance though.  1 / 1.1579x10⁷⁷ .... yeeeah.
-    $query = $db->prepare("insert into users (uuid, password) values (:uuid, :password)");
+    $query = $db->prepare("insert into users (uuid, password, admin) values (:uuid, :password, :admin)");
     $query->bindParam(":uuid", $uuid);
     $newPass = password_hash($_POST["password"],PASSWORD_DEFAULT);
     $query->bindParam(":password", $newPass);
+    $isAdmin = getenv("API_DEBUG", true) != false ? 1 : 0;
+    $query->bindParam(":admin", $isAdmin);
 
     $query->execute();
 

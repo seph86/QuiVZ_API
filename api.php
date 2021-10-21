@@ -3,6 +3,7 @@
 // TODO: remove this in production
 // ====================== DEVELOPMENT PURPOSES ========================== 
 session_save_path(getcwd()."/temp/");
+if (!file_exists(getcwd()."/temp/")) mkdir(getcwd()."/temp/");
 header("Access-Control-Allow-Origin: *");
 
 // Include some multipurpose functions and definitions
@@ -30,7 +31,7 @@ if (!isset($_POST["token"])) {
 include "logger.php";
 
 // If an invalid token was used, respond now with with 400 after the logger has initialized.
-if ($session_error) send_data(BAD);
+if ($session_error) send_data(TIMEOUT);
 
 // Capture the time the user was last active as a timestamp
 $session_inactivty = time() - filemtime(session_save_path()."sess_".session_id());

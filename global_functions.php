@@ -53,14 +53,15 @@ function send_data(int $code, string $message = "", $data = null) {
   appendResponse($code);
 
   // If data is set append it to the JSON array
-  if ($data != null) {
-    array_push($temp,["data" => $data]);
-  }
+  // if ($data != null) {
+  //   array_push($temp,["data" => $data]);
+  // }
+  $temp = $temp + ["data"=>$data];
   
-  // Add debug information if enabled
+  // Add debug information if enabled.  Only checking aginst False because
+  // we only care if the environment variable is set, not what it's set too.
   if ( getenv("API_DEBUG", true) != false ) {
-    error_log("yo");
-    array_push($temp, debug_backtrace());
+    $temp += ["backtrace"=>debug_backtrace()];
   }
 
   // Encode JSON data and send it
