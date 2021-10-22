@@ -23,6 +23,7 @@ $functions["user"]["register"] = function(&$db) {
     $query->bindParam(":uuid", $uuid);
     $newPass = password_hash($_POST["password"],PASSWORD_DEFAULT);
     $query->bindParam(":password", $newPass);
+    // When in debug mode, always set new users to admin for testing.
     $isAdmin = getenv("API_DEBUG", true) != false ? 1 : 0;
     $query->bindParam(":admin", $isAdmin);
 
@@ -31,7 +32,7 @@ $functions["user"]["register"] = function(&$db) {
     $_SESSION["uuid"] = $uuid;
     $_SESSION["admin"] = $isAdmin;
 
-    send_data(OK, "Successfully created user", ["UUID" => $uuid, "token" => session_id()]);
+    send_data(OK, "Successfully created user", ["UUID" => $uuid, "token" => session_id(), "conditional" => hash("sha256", $_SESSION["uuid"] . ($_SESSION["admin"] == 1 ? ADM_SECRET : ""))]);
 
   } else {
 
@@ -76,9 +77,14 @@ $functions["user"]["login"] = function(&$db) {
     
     // Set user to be logged in and admin status if they are an admin
     $_SESSION["uuid"] = $_POST["uuid"];
-    if ($result[0]["admin"] == "1") $_SESSION["admin"] = true;
 
-    send_data(OK, "Logged in successfully", ["token" => session_id()]);
+    // Only allow admin actions to be performed on whitelisted ips
+    global $admin_ip_whitelist;
+    if ($result[0]["admin"] == "1" && array_key_exists($_SERVER["REMOTE_ADDR"],$admin_ip_whitelist) ) $_SESSION["admin"] = 1;
+
+    // Send OK Message, token and UUID hashed with secret key to be stored client side if they are admin
+    // (Doesnt seem like best practice but it is better then just a boolean)
+    send_data(OK, "Logged in successfully", ["token" => session_id(), "conditional" => hash("sha256", $_SESSION["uuid"] . ($_SESSION["admin"] == 1 ? ADM_SECRET : ""))]);
 
   } else {
 
@@ -134,8 +140,10 @@ $functions["user"]["loggedin"] = function() {
 
   if (isset($_SESSION["uuid"]))
     send_data(OK, "You are logged in", ["token" => session_id()]);
-  else 
+  else {
     send_data(BAD, "You are not currently logged in", ["token" => session_id()]);
+    session_destroy();
+  }
 
 };
 
