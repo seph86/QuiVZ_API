@@ -15,6 +15,7 @@ $postData = $_POST;
 if (isset($postData["password"])) $postData["password"] = "[redacted]";
 if (isset($postData["oldpassword"])) $postData["oldpassword"] = "[redacted]";
 if (isset($postData["newpassword"])) $postData["newpassword"] = "[redacted]";
+if (isset($postData["password_confirm"])) $postData["password_confirm"] = "[redacted]";
 $postData = json_encode($postData);
 $query->bindParam(":post", $postData);
 $sessionid = session_id();
@@ -37,5 +38,16 @@ function appendResponse($code) {
 
   $query = $logger->prepare("update log set responseCode = :code where ID = ".$ID);
   $query->bindParam(":code", $code);
+  $query->execute();
+}
+
+function appendData($data) {
+
+  global $logger;
+
+  $ID = $logger->lastInsertId();
+
+  $query = $logger->prepare("update log set responseCode = concat( responseCode, :post) where ID = ".$ID);
+  $query->bindParam(":post", $data);
   $query->execute();
 }
