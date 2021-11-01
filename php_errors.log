@@ -36,3 +36,230 @@ Stack trace:
 [21-Oct-2021 19:53:07 Australia/Melbourne] PHP Warning:  Undefined array key "admin" in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api/user/user.php on line 84
 [21-Oct-2021 20:11:30 Australia/Melbourne] 127.0.0.1
 [21-Oct-2021 20:16:18 Australia/Melbourne] PHP Warning:  Undefined array key "admin" in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api/user/user.php on line 85
+[01-Nov-2021 13:07:53 Australia/Melbourne] something
+
+[01-Nov-2021 13:07:53 Australia/Melbourne] something
+
+[01-Nov-2021 13:11:17 Australia/Melbourne] something
+
+[01-Nov-2021 13:11:17 Australia/Melbourne] something
+
+[01-Nov-2021 13:11:41 Australia/Melbourne] something
+
+[01-Nov-2021 13:11:42 Australia/Melbourne] something
+
+[01-Nov-2021 13:13:55 Australia/Melbourne] checking file
+[01-Nov-2021 13:13:55 Australia/Melbourne] something
+
+[01-Nov-2021 13:13:56 Australia/Melbourne] checking file
+[01-Nov-2021 13:13:56 Australia/Melbourne] something
+
+[01-Nov-2021 13:14:34 Australia/Melbourne] checking file
+[01-Nov-2021 13:14:34 Australia/Melbourne] something
+
+[01-Nov-2021 13:14:35 Australia/Melbourne] checking file
+[01-Nov-2021 13:14:35 Australia/Melbourne] something
+
+[01-Nov-2021 13:15:14 Australia/Melbourne] something
+
+[01-Nov-2021 13:15:14 Australia/Melbourne] something
+
+[01-Nov-2021 13:40:08 Australia/Melbourne] PHP Warning:  Undefined array key "SERVER_PORT" in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 19
+[01-Nov-2021 13:40:08 Australia/Melbourne] PHP Warning:  Undefined array key "SERVER_PORT" in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 20
+[01-Nov-2021 13:40:08 Australia/Melbourne] PHP Warning:  Undefined array key "SERVER_PORT" in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 21
+[01-Nov-2021 13:40:08 Australia/Melbourne] PHP Warning:  Undefined array key "SERVER_PORT" in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 22
+[01-Nov-2021 13:40:08 Australia/Melbourne] PHP Warning:  Undefined array key "REMOTE_ADDR" in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php on line 41
+[01-Nov-2021 13:40:08 Australia/Melbourne] ERROR: log_db not set in .settings file. Exiting
+[01-Nov-2021 13:46:54 Australia/Melbourne] ERROR: log_db not set in .settings file. Exiting
+[01-Nov-2021 13:46:54 Australia/Melbourne] ERROR: log_db not set in .settings file. Exiting
+[01-Nov-2021 13:47:11 Australia/Melbourne] ERROR: log_db not set in .settings file. Exiting
+[01-Nov-2021 13:47:11 Australia/Melbourne] ERROR: log_db not set in .settings file. Exiting
+[01-Nov-2021 13:49:14 Australia/Melbourne] ERROR: Cannot connect to log database file -
+[01-Nov-2021 13:49:14 Australia/Melbourne] PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:24
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(24): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(80): logger->__construct()
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php(3): include_once('...')
+#3 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(33): include('...')
+#4 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#5 {main}
+[01-Nov-2021 13:49:14 Australia/Melbourne] PHP Warning:  filemtime(): stat failed for /var/lib/php/sessionssess_bebbc1c23a701a31 in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php on line 60
+[01-Nov-2021 13:49:14 Australia/Melbourne] PHP Warning:  Undefined variable $logger in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 65
+[01-Nov-2021 13:49:14 Australia/Melbourne] PHP Fatal error:  Uncaught Error: Call to a member function appendResponse() on null in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php:65
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(69): send_data()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#2 {main}
+  thrown in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 65
+[01-Nov-2021 13:50:30 Australia/Melbourne] test=something
+
+[01-Nov-2021 13:50:30 Australia/Melbourne] log_db=sqlite:./log.db
+
+[01-Nov-2021 13:50:30 Australia/Melbourne] ERROR: Cannot connect to log database file -
+[01-Nov-2021 13:50:30 Australia/Melbourne] PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:24
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(24): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(80): logger->__construct()
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php(3): include_once('...')
+#3 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(34): include('...')
+#4 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#5 {main}
+[01-Nov-2021 13:50:30 Australia/Melbourne] PHP Warning:  filemtime(): stat failed for /var/lib/php/sessionssess_10a0abc4fd3695d5 in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php on line 61
+[01-Nov-2021 13:50:30 Australia/Melbourne] PHP Warning:  Undefined variable $logger in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 65
+[01-Nov-2021 13:50:30 Australia/Melbourne] PHP Fatal error:  Uncaught Error: Call to a member function appendResponse() on null in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php:65
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(70): send_data()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#2 {main}
+  thrown in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 65
+[01-Nov-2021 13:51:30 Australia/Melbourne] log_db=sqlite:./log.db
+
+[01-Nov-2021 13:51:30 Australia/Melbourne] ERROR: Cannot connect to log database file -
+[01-Nov-2021 13:51:30 Australia/Melbourne] PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:24
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(24): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(80): logger->__construct()
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php(3): include_once('...')
+#3 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(34): include('...')
+#4 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#5 {main}
+[01-Nov-2021 13:51:30 Australia/Melbourne] PHP Warning:  filemtime(): stat failed for /var/lib/php/sessionssess_da5c08b516330c44 in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php on line 61
+[01-Nov-2021 13:51:30 Australia/Melbourne] PHP Warning:  Undefined variable $logger in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 65
+[01-Nov-2021 13:51:30 Australia/Melbourne] PHP Fatal error:  Uncaught Error: Call to a member function appendResponse() on null in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php:65
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(70): send_data()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#2 {main}
+  thrown in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 65
+[01-Nov-2021 13:52:41 Australia/Melbourne] ERROR: Cannot connect to log database file -
+[01-Nov-2021 13:52:41 Australia/Melbourne] PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:24
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(24): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(81): logger->__construct()
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php(3): include_once('...')
+#3 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(33): include('...')
+#4 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#5 {main}
+[01-Nov-2021 13:52:41 Australia/Melbourne] ERROR: Cannot connect to log database file -
+[01-Nov-2021 13:52:41 Australia/Melbourne] PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:24
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(24): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(81): logger->__construct()
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php(3): include_once('...')
+#3 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(33): include('...')
+#4 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#5 {main}
+[01-Nov-2021 13:54:31 Australia/Melbourne] PHP Warning:  Undefined property: PDO::$dsn in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 23
+[01-Nov-2021 13:54:31 Australia/Melbourne] 
+[01-Nov-2021 13:54:31 Australia/Melbourne] ERROR: Cannot connect to log database file -
+[01-Nov-2021 13:54:31 Australia/Melbourne] PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:25
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(25): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(82): logger->__construct()
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php(3): include_once('...')
+#3 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(33): include('...')
+#4 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#5 {main}
+[01-Nov-2021 13:54:31 Australia/Melbourne] PHP Warning:  Undefined property: PDO::$dsn in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 23
+[01-Nov-2021 13:54:31 Australia/Melbourne] 
+[01-Nov-2021 13:54:31 Australia/Melbourne] ERROR: Cannot connect to log database file -
+[01-Nov-2021 13:54:31 Australia/Melbourne] PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:25
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(25): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(82): logger->__construct()
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php(3): include_once('...')
+#3 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(33): include('...')
+#4 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#5 {main}
+[01-Nov-2021 13:56:55 Australia/Melbourne] sqlite:./log.db
+
+[01-Nov-2021 13:56:55 Australia/Melbourne] ERROR: Cannot connect to log database file -
+[01-Nov-2021 13:56:55 Australia/Melbourne] PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:24
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(24): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(81): logger->__construct()
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php(3): include_once('...')
+#3 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(33): include('...')
+#4 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#5 {main}
+[01-Nov-2021 13:56:55 Australia/Melbourne] sqlite:./log.db
+
+[01-Nov-2021 13:56:55 Australia/Melbourne] ERROR: Cannot connect to log database file -
+[01-Nov-2021 13:56:55 Australia/Melbourne] PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:24
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(24): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(81): logger->__construct()
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php(3): include_once('...')
+#3 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(33): include('...')
+#4 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#5 {main}
+[01-Nov-2021 13:57:59 Australia/Melbourne] /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API
+[01-Nov-2021 13:57:59 Australia/Melbourne] ERROR: Cannot connect to log database file -
+[01-Nov-2021 13:57:59 Australia/Melbourne] PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:24
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(24): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(81): logger->__construct()
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php(3): include_once('...')
+#3 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(33): include('...')
+#4 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#5 {main}
+[01-Nov-2021 13:58:00 Australia/Melbourne] /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API
+[01-Nov-2021 13:58:00 Australia/Melbourne] ERROR: Cannot connect to log database file -
+[01-Nov-2021 13:58:00 Australia/Melbourne] PDOException: SQLSTATE[HY000]: General error: 1 no such table: log in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:24
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(24): PDO->prepare()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(81): logger->__construct()
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php(3): include_once('...')
+#3 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(33): include('...')
+#4 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#5 {main}
+[01-Nov-2021 14:02:30 Australia/Melbourne] PHP Warning:  filemtime(): stat failed for /var/lib/php/sessionssess_9c695c97c8ccc3b1 in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php on line 60
+[01-Nov-2021 14:02:30 Australia/Melbourne] PHP Warning:  Undefined variable $logger in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 65
+[01-Nov-2021 14:02:30 Australia/Melbourne] PHP Fatal error:  Uncaught Error: Call to a member function appendResponse() on null in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php:65
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(69): send_data()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#2 {main}
+  thrown in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 65
+[01-Nov-2021 14:03:16 Australia/Melbourne] PHP Warning:  filemtime(): stat failed for /var/lib/php/sessionssess_ee9f9e9edbba0e24 in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php on line 60
+[01-Nov-2021 14:03:16 Australia/Melbourne] PHP Warning:  Undefined variable $logger in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 65
+[01-Nov-2021 14:03:16 Australia/Melbourne] PHP Fatal error:  Uncaught Error: Call to a member function appendResponse() on null in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php:65
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(69): send_data()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#2 {main}
+  thrown in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 65
+[01-Nov-2021 14:04:04 Australia/Melbourne] PHP Warning:  Undefined variable $logger in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 65
+[01-Nov-2021 14:04:04 Australia/Melbourne] PHP Fatal error:  Uncaught Error: Call to a member function appendResponse() on null in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php:65
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(103): send_data()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#2 {main}
+  thrown in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 65
+[01-Nov-2021 14:04:15 Australia/Melbourne] PHP Warning:  Undefined variable $logger in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 65
+[01-Nov-2021 14:04:15 Australia/Melbourne] PHP Fatal error:  Uncaught Error: Call to a member function appendResponse() on null in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php:65
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(103): send_data()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#2 {main}
+  thrown in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php on line 65
+[01-Nov-2021 14:11:14 Australia/Melbourne] PHP Fatal error:  Cannot declare class logger, because the name is already in use in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 3
+[01-Nov-2021 14:12:51 Australia/Melbourne] PHP Fatal error:  Cannot declare class logger, because the name is already in use in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 3
+[01-Nov-2021 14:16:57 Australia/Melbourne] PHP Fatal error:  Cannot declare class logger, because the name is already in use in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 3
+[01-Nov-2021 14:20:16 Australia/Melbourne] PHP Fatal error:  Uncaught TypeError: logger::getInstance(): Return value must be of type logger, null returned in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php:81
+Stack trace:
+#0 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php(87): logger::getInstance()
+#1 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/global_functions.php(3): include('...')
+#2 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/api.php(33): include('...')
+#3 /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/router.php(11): include('...')
+#4 {main}
+  thrown in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 81
+[01-Nov-2021 14:22:43 Australia/Melbourne] PHP Fatal error:  Cannot declare class logger, because the name is already in use in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 3
+[01-Nov-2021 14:22:50 Australia/Melbourne] PHP Fatal error:  Cannot declare class logger, because the name is already in use in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 3
+[01-Nov-2021 14:23:09 Australia/Melbourne] PHP Fatal error:  Cannot declare class logger, because the name is already in use in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 3
+[01-Nov-2021 14:24:23 Australia/Melbourne] PHP Fatal error:  Cannot declare class logger, because the name is already in use in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 3
+[01-Nov-2021 14:25:00 Australia/Melbourne] PHP Fatal error:  Cannot declare class logger, because the name is already in use in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 3
+[01-Nov-2021 14:25:45 Australia/Melbourne] PHP Fatal error:  Cannot declare class logger, because the name is already in use in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 3
+[01-Nov-2021 14:27:18 Australia/Melbourne] PHP Fatal error:  Cannot declare class logger, because the name is already in use in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 3
+[01-Nov-2021 14:27:34 Australia/Melbourne] PHP Fatal error:  Cannot declare class logger, because the name is already in use in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 3
+[01-Nov-2021 14:28:32 Australia/Melbourne] PHP Fatal error:  Cannot declare class logger, because the name is already in use in /home/seph/Documents/TAFE_Sem2_MajorProject/QuiVZ_API/logger.php on line 3

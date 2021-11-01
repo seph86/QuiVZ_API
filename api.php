@@ -1,10 +1,33 @@
 <?php 
 
-// TODO: remove this in production
-// ====================== DEVELOPMENT PURPOSES ========================== 
-session_save_path(getcwd()."/temp/");
-if (!file_exists(getcwd()."/temp/")) mkdir(getcwd()."/temp/");
-header("Access-Control-Allow-Origin: *");
+// Load env
+if (file_exists("./.settings")) {
+
+  $lines = file("./.settings");
+  foreach( $lines as $num => $line) {
+    putenv(preg_replace("/\n/", "", "$line")); // Add env and remove newlines
+  }
+
+} else {
+  error_log("Settings file missing");
+  die(1);
+}
+
+
+// Get if in production or debug mode
+if (getenv("API_DEBUG", true) != false) {
+  
+  // DEVELOPMENT
+  session_save_path(getcwd()."/temp/");
+  if (!file_exists(getcwd()."/temp/")) mkdir(getcwd()."/temp/");
+  header("Access-Control-Allow-Origin: *");
+
+} else {
+
+  // PRDUCTION
+  // TODO: Set prod mode here
+
+}
 
 // Include some multipurpose functions and definitions
 include "global_functions.php";
@@ -50,7 +73,6 @@ if ($session_inactivty > 7200 || $_SESSION["remote_ip"] != $_SERVER["REMOTE_ADDR
   session_destroy();
   send_data(TIMEOUT, "Session expired");
 }
-
 
 // Rate limit requests from a single session to 1000 per 24 hours
 if (isset($_SESSION["request_reset_timestamp"])) {
