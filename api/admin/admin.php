@@ -9,34 +9,33 @@ $functions["admin"] = [];
 // /admin/users/
 $functions["admin"]["users"] = [];
 
+/**
+ * 
+ * Setting admin prilvilages
+ */
 // /admin/users/makeadmin
-$functions["admin"]["users"]["makeadmin"] = function(&$db) {
+$functions["admin"]["users"]["makeadmin"] = function(&$db, &$input) {
 
-  setAdmin($db, true);
+  setAdmin($db, true, $input);
 
 };
-
 // /admin/users/removeadmin
-$functions["admin"]["users"]["removeadmin"] = function(&$db) {
+$functions["admin"]["users"]["removeadmin"] = function(&$db, &$input) {
 
-  setAdmin($db, false);
+  setAdmin($db, false, $input);
 
 };
+function setAdmin(&$db, $admin, &$input) {
 
-function setAdmin(&$db, $admin) {
-
-  // Check user is authorized
-  if (!isset($_SESSION["admin"]) || $_SESSION["admin"] != true) send_data(BAD);
-
-  // Check UUID post is set
-  if (!isset($_POST["uuid"])) send_data(BAD, "UUID Missing");
+  // Validate UUID was provided
+  if (!isset($input[1])) send_data(BAD, "UUID Missing");
 
   // Validate input is a valid uuid code
-  if (!preg_match("/^[A-z\d]+$/", $_POST["uuid"])) send_data(BAD, "Malformed UUID");
+  if (!preg_match("/^[A-z\d]+$/", $input[1])) send_data(BAD, "Malformed UUID");
 
   // Check user exists and is not already admin
   $query = $db->prepare("select * from users where uuid = :uuid");
-  $query->bindParam(":uuid", $_POST["uuid"]);
+  $query->bindParam(":uuid", $input[1]);
   $query->execute();
   $result = $query->fetchAll();
   if (count($result) == 0) {
@@ -49,9 +48,23 @@ function setAdmin(&$db, $admin) {
 
   // TODO: Figure out how to make current active session with this uuid admin.
   $query = $db->prepare("update users set admin = " . intval($admin) . " where uuid = :uuid");
-  $query->bindParam(":uuid", $_POST["uuid"]);
+  $query->bindParam(":uuid", $input[1]);
   $query->execute();
 
   send_data(OK, "User privilages set");
 
 }
+
+/**
+ * 
+ * Listing all users
+ */
+// /admin/users/list
+$functions["admin"]["users"]["list"] = function(&$db) {
+  
+  $query = $db->prepare("select uuid, admin from users");
+  $query->execute();
+
+  send_data(OK, "Users", $query->fetchAll(PDO::FETCH_NUM));
+
+};

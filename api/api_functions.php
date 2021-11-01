@@ -17,8 +17,7 @@ include "./api/quiz/quiz.php";
 // ========== Old testing functions onwards ==============
 // =======================================================
 
-$functions["teapot"] = function() {
-
+$functions["teapot"] = function(&$db) {
   // Delete session if the token is not logged in
   if (!isset($_SESSION["uuid"]))
     session_destroy();

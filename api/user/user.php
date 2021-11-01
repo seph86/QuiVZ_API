@@ -77,6 +77,8 @@ $functions["user"]["login"] = function(&$db) {
     
     // Set user to be logged in and admin status if they are an admin
     $_SESSION["uuid"] = $_POST["uuid"];
+
+    // Only allow admin actions to be performed on whitelisted ips
     global $admin_ip_whitelist;
     if ($result[0]["admin"] == "1" && array_key_exists($_SERVER["REMOTE_ADDR"],$admin_ip_whitelist) ) $_SESSION["admin"] = 1;
 
