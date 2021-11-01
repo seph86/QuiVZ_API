@@ -60,7 +60,7 @@ function send_data(int $code, string $message = "", $data = null) {
   $temp = ["message"=>$message];
 
   // Append response code to logger
-  appendResponse($code);
+  logger::getInstance()->appendResponse($code);
 
   // If data is set append it to the JSON array
   // if ($data != null) {
