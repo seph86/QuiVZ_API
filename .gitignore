@@ -1,3 +1,5 @@
 temp/
 .settings
 php_errors.log
+log.db
+quiz.db
