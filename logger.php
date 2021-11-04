@@ -11,6 +11,7 @@ class logger {
   */
   function __construct() {
 
+    // Check settings file has log_db set
     if (getenv("log_db",true) == false) {
       error_log("ERROR: log_db not set in .settings file. Exiting");
       die(1);
@@ -22,6 +23,12 @@ class logger {
     try {
 
       $this->pdo = new PDO(getenv("log_db"), $username, $password);
+
+      // Construct schema if it does not exist
+      $query = $this->pdo->query("show tables like 'log'");
+      if ($query == false) {
+        $this->pdo->query("CREATE TABLE log (id integer primary key autoincrement, timestamp integer not null, IP text not null, action text, post text, session text, userID text, responseCode integer);");
+      }
 
       $query = $this->pdo->prepare("insert into log (timestamp, IP, action, post, session, userID) values (:now, :IP, :action, :post, :session, :userID);");
 

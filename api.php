@@ -5,7 +5,8 @@ if (file_exists("./.settings")) {
 
   $lines = file("./.settings");
   foreach( $lines as $num => $line) {
-    putenv(preg_replace("/\n/", "", "$line")); // Add env and remove newlines
+    if (!preg_match("/^#/", $line) && preg_match("/^\w+=\w+/", $line)) // Add anything this is valid
+      putenv(preg_replace("/\n|\r|\ /", "", "$line")); // Remove newlines and spaces, then add to env
   }
 
 } else {
@@ -36,15 +37,14 @@ include "global_functions.php";
 include "logger.php";
 
 // Rate limit requests from a single ip to 4 requests per second by counting log requests
-$query = $logger->query("select count(timestamp) from log where IP = \"" . $_SERVER["REMOTE_ADDR"] . "\" and  timestamp = \"" . time() . "\"");
-if (intval($query->fetch()[0]) > 4) send_data(TOOMANY);  // Are there more than 4 requests in the last second?
+if (logger::getInstance()->getRequestcount() > 4) send_data(TOOMANY);  // Are there more than 4 requests in the last second?
 
 // We need to start the session engine early because we need that information asap
 ini_set("session.use_cookies", "0"); // We're going to work with tokens in localstorage. Not cookies
 $session_error = false;
 
 // Destroy posted token if it is invalid.  We'll make our own later
-if ( !file_exists(session_save_path()."sess_".$_POST["token"]) ) {
+if ( isset($_POST["token"]) && !file_exists(session_save_path()."sess_".$_POST["token"]) ) {
   $_POST["token"] = null;
 }
 

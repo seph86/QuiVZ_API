@@ -70,7 +70,7 @@ function send_data(int $code, string $message = "", $data = null) {
   
   // Add debug information if enabled.  Only checking aginst False because
   // we only care if the environment variable is set, not what it's set too.
-  if ( getenv("API_DEBUG", true) != false ) {
+  if ( getenv("API_DEBUG", true) == true ) {
     $temp += ["backtrace"=>debug_backtrace()];
   }
 
