@@ -18,22 +18,24 @@ Only the password is encrypted using php's built in hashing algorithm.  By defau
 ## Requirements 
 - Bash environment
 - php
-- sqlite3 php module
+- PDO Compatible database
+
+## Installation
+
+TODO: this
 
 ## Setup
 
 No setup required if running application on a *nix based device.  Provided you have the requirements installed on your machine.
 
-## Running
+See .settings.EXAMPLE on configuration
 
-Simply run start.sh
+## Development testing running
+
+Simply run start_development.sh (does not support SSE)
 
 ```
-./start.sh
-```
-or
-```
-./debug_start.sh
+./start_development.sh
 ```
 
 ## Testing

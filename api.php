@@ -1,5 +1,7 @@
 <?php 
 
+require("vendor/autoload.php");
+
 // Load env
 if (file_exists("./.settings")) {
 
@@ -14,6 +16,8 @@ if (file_exists("./.settings")) {
   die(1);
 }
 
+// Extract URI elements into an array (empty elements excluded, then reindex)
+$input = array_values(array_filter(explode("/",$_SERVER["REQUEST_URI"]), 'strlen'));
 
 // Get if in production or debug mode
 if (getenv("API_DEBUG", true) != false) {
@@ -37,24 +41,28 @@ include "global_functions.php";
 include "logger.php";
 
 // Rate limit requests from a single ip to 4 requests per second by counting log requests
-if (logger::getInstance()->getRequestcount() > 4) send_data(TOOMANY);  // Are there more than 4 requests in the last second?
+if (logger::getInstance()->getRequestcount() > 4) send_data(TOOMANY);  
 
 // We need to start the session engine early because we need that information asap
 ini_set("session.use_cookies", "0"); // We're going to work with tokens in localstorage. Not cookies
 $session_error = false;
 
-// Destroy posted token if it is invalid.  We'll make our own later
+// Reject request if token is invalid
 if ( isset($_POST["token"]) && !file_exists(session_save_path()."sess_".$_POST["token"]) ) {
-  $_POST["token"] = null;
+  send_data(BAD);
 }
 
-// If token is missing build one, otherwise start session with valid token
-if (!isset($_POST["token"])) 
-  session_id(bin2hex(openssl_random_pseudo_bytes(20)));
-else
-  session_id($_POST["token"]);
+// If there is no token check what the user is doing
+if (!isset($_POST["token"])) { 
+  // If they are trying to login or register, allow
+  if ($input[0] === "user" && ($input[1] === "login" || $input[1] === "register"))
+    $_POST["token"] = bin2hex(openssl_random_pseudo_bytes(20));
+  else // Deny
+    send_data(BAD);
+}
 
 // Start session
+session_id($_POST["token"]);
 session_start();
 $_SESSION["remote_ip"] = $_SERVER["REMOTE_ADDR"];
 
@@ -107,9 +115,6 @@ if (!isset($_SERVER["HTTP_ORIGIN"]) || !array_key_exists($_SERVER["HTTP_ORIGIN"]
 // ---------------------------------------
 // Begin processing API requests
 // ---------------------------------------
-
-// Extract URI elements into an array (empty elements excluded, then reindex)
-$input = array_values(array_filter(explode("/",$_SERVER["REQUEST_URI"]), 'strlen'));
 
 // Connect to the quiz db once early verification tests are completed
 $quizDB = new PDO("sqlite:./quiz.db");

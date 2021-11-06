@@ -1,0 +1,5 @@
+{
+    "require": {
+        "ninsuo/php-shared-memory": "^2.0"
+    }
+}
