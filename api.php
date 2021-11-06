@@ -117,7 +117,21 @@ if (!isset($_SERVER["HTTP_ORIGIN"]) || !array_key_exists($_SERVER["HTTP_ORIGIN"]
 // ---------------------------------------
 
 // Connect to the quiz db once early verification tests are completed
-$quizDB = new PDO("sqlite:./quiz.db");
+if (getenv("quiz_db",true) == false) {
+  error_log("ERROR: quiz_db not set in .settings file. Exiting");
+  die(1);
+}
+
+$username = getenv("quiz_db_username" == false) ? null : getenv("quiz_db_username");
+$password = getenv("quiz_db_password" == false) ? null : getenv("quiz_db_password");
+
+$quizDB = new PDO(getenv("quiz_db"), $username, $password);
+
+// Construct schema if it doesn't already exist
+$query = $quizDB->query("show tables like 'users'");
+if ($query == false) {
+  $quizDB->query("CREATE TABLE users (ID integer primary key autoincrement, uuid text, password text, admin tinyint);");
+}
 
 // Load list of functions
 include "./api/api_functions.php";
