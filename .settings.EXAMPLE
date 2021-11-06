@@ -1,0 +1,15 @@
+# Enable debug mode
+# API_DEBUG=true
+
+# Example SQLITE3 settings
+log_db=sqlite:./.log.db
+quiz_db=sqlite:./.quiz.db
+
+# Example mySQL settings
+# log_db=mysql:dbname=[logging];host=127.0.0.1
+# log_db_username=user
+# log_db_password=password
+
+# Test script settings
+# test_user=[REPLACE ME]
+# test_pass=[REPLACE ME]
