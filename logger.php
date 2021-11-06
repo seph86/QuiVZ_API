@@ -3,6 +3,7 @@
 class logger {
 
   private $pdo;
+  private $LastID;
 
   public static $instance = null;
 
@@ -27,7 +28,7 @@ class logger {
       // Construct schema if it does not exist
       $query = $this->pdo->query("show tables like 'log'");
       if ($query == false) {
-        $this->pdo->query("CREATE TABLE log (id integer primary key autoincrement, timestamp integer not null, IP text not null, action text, post text, session text, userID text, responseCode integer);");
+        $this->pdo->query("CREATE TABLE log (id integer primary key autoincrement, timestamp integer not null, IP text not null, action text, post text, session text, userID text, responseCode integer, responseData text);");
       }
 
       $query = $this->pdo->prepare("insert into log (timestamp, IP, action, post, session, userID) values (:now, :IP, :action, :post, :session, :userID);");
@@ -50,6 +51,8 @@ class logger {
 
       $query->execute();
 
+      $this->LastID = $this->pdo->lastInsertId();
+
 
     } catch(PDOException $e) {
       error_log("ERROR: Cannot connect to log database file -");
@@ -65,10 +68,7 @@ class logger {
    * This is done at the end of send_data() function
    */
   public function appendResponse($code):void {
-
-    $ID = $this->pdo->lastInsertId();
-
-    $query = $this->pdo->prepare("update log set responseCode = :code where ID = ".$ID);
+    $query = $this->pdo->prepare("update log set responseCode = :code where ID = ".$this->LastID);
     $query->bindParam(":code", $code);
     $query->execute();
   }
@@ -84,10 +84,7 @@ class logger {
   }
 
   public function appendData($data) {
-  
-    $ID = $this->pdo->lastInsertId();
-  
-    $query = $this->pdo->prepare("update log set responseCode = concat( responseCode, :post) where ID = ".$ID);
+    $query = $this->pdo->prepare("update log set responseCode = :post where ID = ".$this->LastID);
     $query->bindParam(":post", $data);
     $query->execute();
   }
