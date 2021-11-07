@@ -71,9 +71,9 @@ $session_inactivty = time() - filemtime(session_save_path()."sess_".session_id()
 // Set the response header to JSON content type
 header("Content-Type: text/json");
 
-// Check last time the session had any activity, if it's longer then 2 hours. Log out the user.
+// Check last time the session had any activity, if it's longer then 24 hours. Log out the user.
 // Also log out the user if the ip has changed
-if ($session_inactivty > 7200 || $_SESSION["remote_ip"] != $_SERVER["REMOTE_ADDR"]) {
+if ($session_inactivty > 86400 || $_SESSION["remote_ip"] != $_SERVER["REMOTE_ADDR"]) {
   session_destroy();
   send_data(TIMEOUT, "Session expired");
 }
