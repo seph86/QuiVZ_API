@@ -45,7 +45,6 @@ if (logger::getInstance()->getRequestcount() > 4) send_data(TOOMANY);
 
 // We need to start the session engine early because we need that information asap
 ini_set("session.use_cookies", "0"); // We're going to work with tokens in localstorage. Not cookies
-$session_error = false;
 
 // Reject request if token is invalid
 if ( isset($_POST["token"]) && !file_exists(session_save_path()."sess_".$_POST["token"]) ) {
@@ -65,9 +64,6 @@ if (!isset($_POST["token"])) {
 session_id($_POST["token"]);
 session_start();
 $_SESSION["remote_ip"] = $_SERVER["REMOTE_ADDR"];
-
-// If an invalid token was used, respond now with with 400 after the logger has initialized.
-if ($session_error) send_data(TIMEOUT);
 
 // Capture the time the user was last active as a timestamp
 $session_inactivty = time() - filemtime(session_save_path()."sess_".session_id());
