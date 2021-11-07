@@ -20,6 +20,6 @@ $functions["quiz"]["start_solo"] = function(&$db) {
 
   $data = json_decode($json_quiz, true)["results"];
 
-  send_data(OK, $data);
+  send_data(OK, "Game started", $data);
 
 };
