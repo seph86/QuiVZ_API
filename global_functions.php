@@ -10,6 +10,7 @@ define("FORBIDDEN",403);
 define("NOTFOUND", 404);
 define("TIMEOUT", 408);
 define("TOOMANY", 429);
+define("BROKEN", 500);
 
 // Misc
 define("ADM_SECRET", "b14f6c79f8ac"); // Secret key to hash with the UUID if the user is admin, result is stored client side
