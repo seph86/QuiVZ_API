@@ -30,6 +30,7 @@ if (!isset($_GET["token"])) {
 if (!file_exists(sys_get_temp_dir()."/".$_GET["token"])) {
   http_response_code(400);
   logger::getInstance()->appendResponse(400);
+  logger::getInstance()->appendData("invalid token");
   exit();
 }
 
@@ -38,16 +39,33 @@ use Fuz\Component\SharedMemory\SharedMemory;
 use Fuz\Component\SharedMemory\Storage\StorageFile;
 
 // Load sync file
-$storage = new StorageFile(sys_get_temp_dir()."\"".$_GET["token"]);
+$storage = new StorageFile(sys_get_temp_dir()."/".$_GET["token"]);
 $shared = new SharedMemory($storage);
 
 header("Cache-Control: no-cache");
 header("Content-Type: text/event-stream");
 
 // Loop here
-// while(true) {
+while(true) {
 
-//}
+  if($shared->test) {
+    //error_log("data");
+    echo "event: update\n";
+    echo "data: test\n";
+  } else {
+    //error_log("nodata");
+  }
 
-http_response_code(200);
+  echo "\n";
+
+  // flush data
+  if (ob_get_level() > 0) ob_end_flush();
+  flush();
+
+  // if connection closed then we quit
+  if ( connection_aborted() ) break;
+
+  sleep(3);
+}
+
 exit();
