@@ -1,5 +1,9 @@
 <?php 
 
+// Use Shared memory library
+use Fuz\Component\SharedMemory\SharedMemory;
+use Fuz\Component\SharedMemory\Storage\StorageFile;
+
 /**
  * @var Array Array of available annonmyous API functions
  */
@@ -18,11 +22,29 @@ include "./api/quiz/quiz.php";
 // =======================================================
 
 $functions["teapot"] = function(&$db) {
-  // Delete session if the token is not logged in
-  if (!isset($_SESSION["uuid"]))
-    session_destroy();
-
   send_data(418, "I am a teapot");
+};
+
+$functions["test"] = function(&$db, &$input) {
+  // Only allow logged in users
+  if (!isset($_SESSION["uuid"])) send_data(BAD);
+  
+  // Load sync file
+  $storage = new StorageFile(sys_get_temp_dir()."/".$_POST["token"]);
+  $shared = new SharedMemory($storage);
+
+  if (!isset($input[1])) send_data(BAD, "Input needed");
+
+  if ($input[1] === "on") {
+    $shared->test = true;
+  } else if ($input[1] === "off") {
+    $shared->test = false;
+  } else {
+    send_data(BAD, "Invalid input");
+  }
+
+  send_data(OK, "Hi");
+
 };
 
 // $functions["delay"] = function() {
