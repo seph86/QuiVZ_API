@@ -8,8 +8,8 @@
 # I should of used python.
 
 # file locations
-cookies_file="$(dirname -- "$0")/cookies"
-output_file="$(dirname -- "$0")/output"
+token_file="/tmp/test_token.u4i8y44XfR"
+output_file="$(mktemp)"
 
 # set default options
 host="127.0.0.1"
@@ -17,13 +17,27 @@ port="8080"
 protocol="http://"
 verbose=false
 output=false
-retain_cookies=false
 skip_ratelimit=false
 curl_data=""
+token=""
+pass2="StrongPassword99"
 
-user="65a6fc4a8551e48fd5a9fcafe9cfb5a35df0782551d870951ec6457e7dee0924"
-pass="StrongPassword01"
-pass2="StrongPassword02"
+# If token file exists load it
+if [ -f $token_file ]; then
+  token=$(cat $token_file)
+fi
+
+if [ -f ".settings" ]; then
+  user=$(grep "^test_user" .settings | awk 'BEGIN {RS="\n"}{split($0,a,"="); print a[2]}' | sed 's/\r//g')
+  if [ $? -ne 0 ]; then
+    echo "Warning: No user set, please create a login first then save it to the .settings config"
+  fi
+  pass=$(grep "^test_pass" .settings | awk 'BEGIN {RS="\n"}{split($0,a,"="); print a[2]}' | sed 's/\r//g')
+  if [ $? -ne 0 ]; then
+    echo "Warning: No password set, please create a login first then save it to the .settings config"
+  fi
+fi
+
 test_count=0
 test_success=0
 
@@ -37,7 +51,7 @@ help() {
   echo "-s        : Set https mode"
   echo "-v        : Print more sh*t"
   echo "-r        : Print json responses"
-  echo "-k        : Keep cookie data, do not delete after script is finished"
+  echo "-D        : Destroy token file after script is complete"
   echo "-sr       : Skip rate limiting"
   echo "-l        : Login (best used with -k) then exit"
   echo "-L        : Logout then exit"
@@ -95,22 +109,33 @@ while (( $# )); do
     -r)
       output=true
       ;;
-    -k)
-      retain_cookies=true
+    -D)
+      if [ -f $token_file ]; then
+        rm $token_file
+        echo "Cookie deleted"
+      fi
+      exit 0;
       ;;
     -t)
-      curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s --header Origin:$protocol$host:$port $protocol$host:$port/teapot/
+      curl $([[ $verbose = "true" ]] && echo "-v") -s --header Origin:$protocol$host:$port $protocol$host:$port/teapot/
       exit 418
       ;;
     -sr)
       skip_ratelimit=true
       ;;
     -l)
-      curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s --header Origin:$protocol$host:$port $protocol$host:$port/user/login/ -d "uuid=$user&password=$pass"
+      if [ -f $token_file ]; then
+        echo "Error: Token file exists, you must delete it before trying to login again"
+        exit 1;
+      fi
+      curl $([[ $verbose = "true" ]] && echo "-v") -s --header Origin:$protocol$host:$port $protocol$host:$port/user/login/ -d "uuid=$user&password=$pass" | tee $output_file
+      # Save the token
+      grep -o '"token": *"[^"]*"' $output_file | grep -o '"[^"]*"$' | sed 's/\"//g' > $token_file
       exit 0;
       ;;
     -L)
-      curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s --header Origin:$protocol$host:$port $protocol$host:$port/user/logout/
+      curl $([[ $verbose = "true" ]] && echo "-v") -s --header Origin:$protocol$host:$port $protocol$host:$port/user/logout/ -d "token=$token"
+      rm $token_file
       exit 0;
       ;;
     -d)
@@ -118,7 +143,7 @@ while (( $# )); do
       shift 1
       ;;
     -c)
-      curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s --header Origin:$protocol$host:$port $protocol$host:$port/$2 $([[ $curl_data != "" ]] && echo "-d $curl_data")
+      curl $([[ $verbose = "true" ]] && echo "-v") -s --header Origin:$protocol$host:$port $protocol$host:$port/$2 -d "token=$token" $([[ $curl_data != "" ]] && echo "-d $curl_data")
       exit 0;
       ;;
     *)
@@ -132,7 +157,7 @@ while (( $# )); do
 done
 
 # Set command
-cmd="curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s -w %{HTTP_CODE} $([[ $verbose = "true" || $output = "true" ]] && echo "-o $output_file" || echo "-o /dev/null" ) --header Origin:$protocol$host:$port $protocol$host:$port"
+cmd="curl $([[ $verbose = "true" ]] && echo "-v") -s -w %{HTTP_CODE} $([[ $verbose = "true" || $output = "true" ]] && echo "-o $output_file" || echo "-o /dev/null" ) --header Origin:$protocol$host:$port $protocol$host:$port"
 #echo $cmd"/debug/" ; exit 1
 
 echo "Testing $host:$port .... "
@@ -162,12 +187,12 @@ fi
 
 # Test origin
 echo "Testing no header origin"
-test 400 $(curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s -w %{HTTP_CODE} $([[ $verbose = "true" || $output = "true" ]] && echo "-o $output_file" || echo "-o /dev/null" ) $protocol$host:$port)
+test 400 $(curl $([[ $verbose = "true" ]] && echo "-v") -s -w %{HTTP_CODE} $([[ $verbose = "true" || $output = "true" ]] && echo "-o $output_file" || echo "-o /dev/null" ) $protocol$host:$port)
 sleep 0.5
 
 # Test invalid origin
 echo "Testing invalid origin"
-test 400 $(curl $([[ $verbose = "true" ]] && echo "-v") -c $cookies_file -b $cookies_file -s -w %{HTTP_CODE} $([[ $verbose = "true" || $output = "true" ]] && echo "-o $output_file" || echo "-o /dev/null" ) $protocol$host:$port --header Origin:http://example.com)
+test 400 $(curl $([[ $verbose = "true" ]] && echo "-v") -s -w %{HTTP_CODE} $([[ $verbose = "true" || $output = "true" ]] && echo "-o $output_file" || echo "-o /dev/null" ) $protocol$host:$port --header Origin:http://example.com)
 
 
 # -----------------------------------------------------------
@@ -298,9 +323,6 @@ printf %.0f%%\\n "$((10**3 * $test_success / $test_count ))e-1"
 
 
 #cleanup
-if [[ -f $cookies_file && $retain_cookies = "false" ]]; then
-  rm $cookies_file
-fi
 if [ -f $output_file ]; then
   rm $output_file
 fi
