@@ -26,8 +26,7 @@ class logger {
       $this->pdo = new PDO(getenv("log_db"), $username, $password);
 
       // Construct schema if it does not exist
-      $query = $this->pdo->query("show tables like 'log'");
-      if ($query == false) {
+      if (!table_exists($this->pdo, "log")) {
         $this->pdo->query("CREATE TABLE log (id integer primary key autoincrement, timestamp integer not null, IP text not null, action text, post text, session text, userID text, responseCode integer, responseData text);");
       }
 

@@ -124,8 +124,7 @@ $password = getenv("quiz_db_password" == false) ? null : getenv("quiz_db_passwor
 $quizDB = new PDO(getenv("quiz_db"), $username, $password);
 
 // Construct schema if it doesn't already exist
-$query = $quizDB->query("show tables like 'users'");
-if ($query == false) {
+if (!table_exists($quizDB, "users")) {
   $quizDB->query("CREATE TABLE users (ID integer primary key autoincrement, uuid text, password text, admin tinyint);");
 }
 
