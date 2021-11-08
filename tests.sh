@@ -112,7 +112,7 @@ while (( $# )); do
     -D)
       if [ -f $token_file ]; then
         rm $token_file
-        echo "Cookie deleted"
+        echo "Token deleted"
       fi
       exit 0;
       ;;
@@ -143,7 +143,7 @@ while (( $# )); do
       shift 1
       ;;
     -c)
-      curl $([[ $verbose = "true" ]] && echo "-v") -s --header Origin:$protocol$host:$port $protocol$host:$port/$2 -d "token=$token" $([[ $curl_data != "" ]] && echo "-d $curl_data")
+      curl $([[ $verbose = "true" ]] && echo "-v") -s --header Origin:$protocol$host:$port $protocol$host:$port/$2 $([[ $token != "" ]] && echo "-d 'token=$token'") $([[ $curl_data != "" ]] && echo "-d $curl_data")
       exit 0;
       ;;
     *)
