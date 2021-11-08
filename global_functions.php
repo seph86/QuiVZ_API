@@ -81,3 +81,19 @@ function send_data(int $code, string $message = "", $data = null) {
   // Kill php, no further instruction to execute after this point
   die();
 }
+
+
+// Simple function to determine if a table exists in a database
+function table_exists($pdo, $table):bool{
+
+  try {
+    // Try do something with the table
+    $result = $pdo->query("select 1 from {$table} limit 1");
+  } catch (Exception $e) {
+    // Something failed, probably no table
+    return false;
+  }
+
+  return $result !== false;
+
+}
