@@ -11,7 +11,7 @@ $functions = [];
 
 // Include subcategories
 include "./api/user/user.php";
-include "./api/categories/categories.php";
+//include "./api/categories/categories.php";
 include "./api/admin/admin.php";
 include "./api/quiz/quiz.php";
 
@@ -33,17 +33,19 @@ $functions["test"] = function(&$db, &$input) {
   $storage = new StorageFile(sys_get_temp_dir()."/".$_POST["token"]);
   $shared = new SharedMemory($storage);
 
-  if (!isset($input[1])) send_data(BAD, "Input needed");
+  //if (!isset($input[1])) send_data(BAD, "Input needed");
 
-  if ($input[1] === "on") {
-    $shared->test = true;
-  } else if ($input[1] === "off") {
-    $shared->test = false;
-  } else {
-    send_data(BAD, "Invalid input");
-  }
+  // if ($input[1] === "on") {
+  //   $shared->test = true;
+  // } else if ($input[1] === "off") {
+  //   $shared->test = false;
+  // } else {
+  //   send_data(BAD, "Invalid input");
+  // }
 
-  send_data(OK, "Hi");
+  $shared->test = "Message!";
+
+  send_data(OK, "Sent");
 
 };
 

@@ -13,17 +13,17 @@ class logger {
   function __construct() {
 
     // Check settings file has log_db set
-    if (getenv("log_db",true) == false) {
+    if (!isset($_ENV["log_db"])) {
       error_log("ERROR: log_db not set in .settings file. Exiting");
       die(1);
     }
 
-    $username = getenv("log_db_username" == false) ? null : getenv("log_db_username");
-    $password = getenv("log_db_password" == false) ? null : getenv("log_db_password");
+    $username = isset($_ENV["log_db_username"]) ? $_ENV["log_db_username"] : null;
+    $password = isset($_ENV["log_db_password"]) ? $_ENV["log_db_password"] : null;
 
     try {
 
-      $this->pdo = new PDO(getenv("log_db"), $username, $password);
+      $this->pdo = new PDO($_ENV["log_db"], $username, $password);
 
       // Construct schema if it does not exist
       $query = $this->pdo->query("show tables like 'log'");
@@ -42,6 +42,7 @@ class logger {
       if (isset($postData["password"])) $postData["password"] = "[redacted]";
       if (isset($postData["oldpassword"])) $postData["oldpassword"] = "[redacted]";
       if (isset($postData["newpassword"])) $postData["newpassword"] = "[redacted]";
+      if (isset($postData["password_confirm"])) $postData["password_confirm"] = "[redacted]";
       $postData = json_encode($postData);
       $query->bindParam(":post", $postData);
       $sessionid = session_id();

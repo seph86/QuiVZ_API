@@ -1,5 +1,8 @@
 <?php
 
+use Fuz\Component\SharedMemory\SharedMemory;
+use Fuz\Component\SharedMemory\Storage\StorageFile;
+
 // ============ User functions =============
 $functions["user"] = [];
 
@@ -19,20 +22,22 @@ $functions["user"]["register"] = function(&$db) {
 
     // Should never need to check if user exists as uuid should never be a duplicate... "should".
     // There is a chance though.  1 / 1.1579x10⁷⁷ .... yeeeah.
-    $query = $db->prepare("insert into users (uuid, password, admin) values (:uuid, :password, :admin)");
+    $query = $db->prepare("insert into users (uuid, password, admin, token) values (:uuid, :password, :admin, :token)");
     $query->bindParam(":uuid", $uuid);
     $newPass = password_hash($_POST["password"],PASSWORD_DEFAULT);
     $query->bindParam(":password", $newPass);
     // When in debug mode, always set new users to admin for testing.
-    $isAdmin = getenv("API_DEBUG", true) != false ? 1 : 0;
+    $isAdmin = isset($_ENV["API_DEBUG"]) && $_ENV["API_DEBUG"] != false ? 1 : 0;
     $query->bindParam(":admin", $isAdmin);
+    $token = session_ID();
+    $query->bindParam(":token", $token);
 
     $query->execute();
 
     $_SESSION["uuid"] = $uuid;
     $_SESSION["admin"] = $isAdmin;
 
-    send_data(OK, "Successfully created user", ["UUID" => $uuid, "token" => session_id(), "conditional" => hash("sha256", $_SESSION["uuid"] . ($_SESSION["admin"] == 1 ? ADM_SECRET : ""))]);
+    send_data(OK, "Successfully created user", ["UUID" => $uuid, "token" => $token, "conditional" => hash("sha256", $_SESSION["uuid"] . ($_SESSION["admin"] == 1 ? ADM_SECRET : ""))]);
 
   } else {
 
@@ -44,9 +49,6 @@ $functions["user"]["register"] = function(&$db) {
 
 // /user/login
 $functions["user"]["login"] = function(&$db) {
-
-  // Check user is not already logged in, if so return a response failing the login request
-  if (isset($_SESSION["uuid"])) send_data(FORBIDDEN, "You are already logged in");
 
   // Check post data exists
   if (!isset($_POST["password"])) send_data(BAD, "Password required");
@@ -80,7 +82,16 @@ $functions["user"]["login"] = function(&$db) {
 
     // Only allow admin actions to be performed on whitelisted ips
     global $admin_ip_whitelist;
-    if ($result[0]["admin"] == "1" && array_key_exists($_SERVER["REMOTE_ADDR"],$admin_ip_whitelist) ) $_SESSION["admin"] = 1;
+    if ($result[0]["admin"] == "1" && array_key_exists($_SERVER["REMOTE_ADDR"],$admin_ip_whitelist))
+      $_SESSION["admin"] = 1;
+    else 
+      $_SESSION["admin"] = 0;
+
+    // Update the user table with the new token
+    $query = $db->prepare("update users set token = :token where uuid = :uuid");
+    $query->bindParam(":uuid", $_POST["uuid"]);
+    $query->bindParam(":token", $_POST["token"]);
+    $query->execute();
 
     // Send OK Message, token and UUID hashed with secret key to be stored client side if they are admin
     // (Doesnt seem like best practice but it is better then just a boolean)
@@ -97,9 +108,6 @@ $functions["user"]["login"] = function(&$db) {
 
 // /user/newpassword
 $functions["user"]["newpassword"] = function(&$db) {
-
-  // Check user is logged in first
-  if (!isset($_SESSION["uuid"])) send_data(BAD, "You are not currently logged in");
 
   // Check all for post data exists
   if (!isset($_POST["oldpassword"]) || !isset($_POST["newpassword"])) send_data(BAD, "You must fill in all fields");
@@ -141,7 +149,7 @@ $functions["user"]["loggedin"] = function() {
   if (isset($_SESSION["uuid"]))
     send_data(OK, "You are logged in", ["token" => session_id()]);
   else {
-    send_data(BAD, "You are not currently logged in", ["token" => session_id()]);
+    send_data(BAD, "You are not currently logged in");
     session_destroy();
   }
 
@@ -149,12 +157,28 @@ $functions["user"]["loggedin"] = function() {
 
 // /user/logout
 $functions["user"]["logout"] = function() {
-
-  // If there is no user logged in
-  if (!isset($_SESSION["uuid"])) send_data(BAD, "You are not currently logged in");
-
   // Log out but keep session data
   session_destroy();
   send_data(OK, "Successfully logged out");
+
+};
+
+// /user/addfriend/[uuid]/[fromName]
+$functions["user"]["addfriend"] = function(&$db, &$input) {
+
+  // If no uuid is supplied
+  if (!isset($input[1]) || !isset($input[2])) send_data(BAD);
+
+  // get target token file
+  $token = get_uuid_session($db, $input[1]);
+
+  if (!$token) send_data(BAD); // UUID doesnt have a token or doesnt exist
+
+  // Send message to user
+  $storage = new StorageFile(sys_get_temp_dir()."/".$token);
+  $shared = new SharedMemory($storage);
+  $shared->friendRequest = ["username" => $input[2], "uuid" => $_SESSION["uuid"]];
+
+  send_data(OK);
 
 };

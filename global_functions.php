@@ -18,17 +18,13 @@ define("ADM_SECRET", "b14f6c79f8ac"); // Secret key to hash with the UUID if the
 // Allowed origins
 $origin_whitelist = Array(
   "http://localhost:".$_SERVER["SERVER_PORT"] => true,
-  "http://127.0.0.1:".$_SERVER["SERVER_PORT"] => true,
   "https://localhost:".$_SERVER["SERVER_PORT"] => true,
-  "https://127.0.0.1:".$_SERVER["SERVER_PORT"] => true,
+  // "https://[url]" => true,
   //Testing
-  "http://localhost:8000"=>true,
-  "http://127.0.0.1:8000"=>true,
   "http://localhost:3000"=>true,
-  "https://localhost:8000"=>true,
-  "https://localhost:3000"=>true,
-  "https://192.168.2.2:8000"=>true,
-  "http://172.30.240.89:3000"=>true
+  "http://localhost"=>true,
+  "http://quivz" => true,
+  "https://192.168.1.104:3000" => true
 );
 
 // Restrict and privilages to those only on the following IPs
@@ -44,6 +40,7 @@ function send_data(int $code, string $message = "", $data = null) {
   
   // Predefine a list of response messages
   $response_code_messages = Array(
+    OK => "OK",
     BAD => "Invalid Request",
     FORBIDDEN => "You are not allowed to do this",
     TOOMANY => "Too many requests",
@@ -71,13 +68,27 @@ function send_data(int $code, string $message = "", $data = null) {
   
   // Add debug information if enabled.  Only checking aginst False because
   // we only care if the environment variable is set, not what it's set too.
-  if ( getenv("API_DEBUG", true) == true ) {
+  if (isset($_ENV["API_DEBUG"]) && $_ENV["API_DEBUG"] == true ) {
     $temp += ["backtrace"=>debug_backtrace()];
   }
 
   // Encode JSON data and send it
   echo json_encode($temp) . "\n";
-  
+
   // Kill php, no further instruction to execute after this point
-  die();
+  exit(0);
+}
+
+
+function get_uuid_session(&$db, $session) {
+
+  // get token from user in database
+  $query= $db->prepare("select token from users where uuid = :uuid");
+  $query->bindParam(":uuid", $session);
+  $query->execute();
+  $result = $query->fetch();
+
+  if ($result) return $result["token"];
+  else return false;
+
 }

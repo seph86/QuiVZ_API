@@ -7,8 +7,11 @@ if (file_exists("./.settings")) {
 
   $lines = file("./.settings");
   foreach( $lines as $num => $line) {
-    if (!preg_match("/^#/", $line) && preg_match("/^\w+=\w+/", $line)) // Add anything this is valid
-      putenv(preg_replace("/\n|\r|\ /", "", "$line")); // Remove newlines and spaces, then add to env
+    if (!preg_match("/^#/", $line) && preg_match("/^\w+=\w+/", $line)){ // Add anything this is valid
+      $line = preg_replace("/\n|\r|\ /", "", "$line"); // Remove newlines and spaces, then add to env
+      $temp = explode("=",$line);
+      $_ENV[$temp[0]] = $temp[1];
+    }
   }
 
 } else {
@@ -20,7 +23,7 @@ if (file_exists("./.settings")) {
 $input = array_values(array_filter(explode("/",$_SERVER["REQUEST_URI"]), 'strlen'));
 
 // Get if in production or debug mode
-if (getenv("API_DEBUG", true) != false) {
+if (isset($_ENV["API_DEBUG"]) && $_ENV["API_DEBUG"] == "true") {
   
   // DEVELOPMENT
   session_save_path(getcwd()."/temp/");
@@ -113,29 +116,30 @@ if (!isset($_SERVER["HTTP_ORIGIN"]) || !array_key_exists($_SERVER["HTTP_ORIGIN"]
 // ---------------------------------------
 
 // Connect to the quiz db once early verification tests are completed
-if (getenv("quiz_db",true) == false) {
+if (!isset($_ENV["quiz_db"])) {
   error_log("ERROR: quiz_db not set in .settings file. Exiting");
   die(1);
 }
 
-$username = getenv("quiz_db_username" == false) ? null : getenv("quiz_db_username");
-$password = getenv("quiz_db_password" == false) ? null : getenv("quiz_db_password");
+$username = isset($_ENV["quiz_db_username"]) ? $_ENV["quiz_db_username"] : null;
+$password = isset($_ENV["quiz_db_password"]) ? $_ENV["quiz_db_password"] : null;
 
-$quizDB = new PDO(getenv("quiz_db"), $username, $password);
+$quizDB = new PDO($_ENV["quiz_db"], $username, $password);
 
-// Construct schema if it doesn't already exist
+// Construct quiz schema if it doesn't already exist
 $query = $quizDB->query("show tables like 'users'");
 if ($query == false) {
   $quizDB->query("CREATE TABLE users (ID integer primary key autoincrement, uuid text, password text, admin tinyint);");
 }
 
-// Load list of functions
-include "./api/api_functions.php";
-
 // Check that there has been a API request
 if (!isset($input[0])) {
   send_data(BAD);
 }
+
+// We only want logged in users to be able to do anything, so unless they are checking logged in, logging in, or registring can they continue
+if (!isset($_SESSION["uuid"]) && $input[0] == "user" && ($input[0] == "login" || $input[0] == "register" || $input[0] == "loggedin"))
+  send_data(BAD, "You are not currently logged in");
 
 // Set a flag that we will use later to change what error we output
 $isAdminFunction = false;
@@ -143,6 +147,9 @@ if ($input[0] == "admin") {
   if (!isset($_SESSION["admin"]) || $_SESSION["admin"] != true) send_data(UNAUTHORIZED);
   $isAdminFunction = true; 
 }
+
+// Load list of functions
+include "./api/api_functions.php";
 
 // Process input logic
 while(1) {
