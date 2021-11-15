@@ -79,7 +79,6 @@ function send_data(int $code, string $message = "", $data = null) {
   exit(0);
 }
 
-
 function get_uuid_session(&$db, $session) {
 
   // get token from user in database
@@ -90,5 +89,20 @@ function get_uuid_session(&$db, $session) {
 
   if ($result) return $result["token"];
   else return false;
+
+}
+
+// Simple function to determine if a table exists in a database
+function table_exists($pdo, $table):bool{
+
+  try {
+    // Try do something with the table
+    $result = $pdo->query("select 1 from {$table} limit 1");
+  } catch (Exception $e) {
+    // Something failed, probably no table
+    return false;
+  }
+
+  return $result !== false;
 
 }
