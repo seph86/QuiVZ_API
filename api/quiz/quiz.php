@@ -40,6 +40,7 @@ $functions["quiz"]["challenge"] = function(&$db, &$input) {
   $storage = new StorageFile(sys_get_temp_dir()."/".$_POST["token"]);
   $shared = new SharedMemory($storage);
   if ($shared->pendingGame != null) send_data(BAD, "Cannot challenge more than one person");
+  $shared->pendingGame = ["uuid"=>$input[1], "expires"=>time() + 5];
 
   // Notify recipient
   $storage = new StorageFile(sys_get_temp_dir()."/".$recipient_token);
@@ -59,6 +60,11 @@ $functions["quiz"]["accept"] = function(&$db, &$input) {
   $recipient_token = get_uuid_session($db, $input[1]);
 
   if ($recipient_token == false) send_data(BAD); //Invalid token
+
+  $storage = new StorageFile(sys_get_temp_dir()."/".$recipient_token);
+  $shared = new SharedMemory($storage);
+
+  if ($shared->pendingGame == null) send_data(BAD);
 
   // Load quiz data
   $json_quiz = file_get_contents("https://opentdb.com/api.php?amount=10&category=15&difficulty=medium&type=multiple");
@@ -84,7 +90,7 @@ $functions["quiz"]["accept"] = function(&$db, &$input) {
   $shared->gameData = $json_quiz;
   $shared->trigger = false;
 
-  send_data(OK, "Response sent", $json_quiz);
+  send_data(OK, "Response sent");
 
 };
 
@@ -101,7 +107,7 @@ $functions["quiz"]["reject"] = function(&$db, &$input) {
   $storage = new StorageFile(sys_get_temp_dir()."/".$recipient_token);
   $shared = new SharedMemory($storage);
   $shared->response = "false";
-  $shared->activeGame = null;
+  $shared->pendingGame = null;
 
   send_data(OK, "Response sent");
 
@@ -119,7 +125,7 @@ $functions["quiz"]["get"] = function(&$db) {
 };
 
 // Player ready
-$functions["quiz"]["ready"] = function(&$db, &$input) {
+$functions["quiz"]["ready"] = function() {
 
   $storage = new StorageFile(sys_get_temp_dir()."/".$_POST["token"]);
   $shared = new SharedMemory($storage);
@@ -140,7 +146,6 @@ $functions["quiz"]["answer_points"] = function(&$db, &$input) {
   $storage = new StorageFile(sys_get_temp_dir()."/".$_POST["token"]);
   $shared = new SharedMemory($storage);
   if (!$shared->activeGame) send_data(BAD); // There is no active game
-  $shared->ready = true;
 
   $storage = new StorageFile(sys_get_temp_dir()."/".$shared->opponent);
   $shared = new SharedMemory($storage);
@@ -152,7 +157,7 @@ $functions["quiz"]["answer_points"] = function(&$db, &$input) {
 };
 
 
-$functions["quiz"]["end_game"] = function(&$db, &$input) {
+$functions["quiz"]["end_game"] = function() {
 
   $storage = new StorageFile(sys_get_temp_dir()."/".$_POST["token"]);
   $shared = new SharedMemory($storage);

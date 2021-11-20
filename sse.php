@@ -1,5 +1,7 @@
 <?php 
 
+ignore_user_abort(true);
+
 require("vendor/autoload.php");
 
 // Load env
@@ -60,6 +62,8 @@ header("Content-Type: text/event-stream");
 // Loop here
 while(true) {
 
+  echo "\n";
+
   if ($shared->friendRequest != null) {
     echo "event: friendRequest\n";
     echo "data: ".json_encode($shared->friendRequest)."\n\n";
@@ -87,7 +91,7 @@ while(true) {
   if ($shared->pendingGame != null) {
     if (time() > $shared->pendingGame["expires"]) {
       $shared->pendingGame = null;
-      echo "event: gameExpired\ndata: \n\n";
+      echo "event: response\ndata: false\n\n";
     }
   }
 
@@ -145,14 +149,14 @@ while(true) {
     $shared->trigger = false;
   }
 
-  echo "\n";
-
   // flush data
   if (ob_get_level() > 0) ob_end_flush();
   flush();
 
   // if connection closed then we quit
-  if ( connection_aborted() ) { 
+  if ( connection_aborted() || connection_status() != 0) {
+
+    // error_log("connection ended===============");
 
     // Clean connection data
     $shared->activeGame = null;
@@ -163,7 +167,7 @@ while(true) {
       $tempShared->opponentDisconnect = true;
     }
 
-    break;
+    exit();
   }
 
   usleep(100000);
