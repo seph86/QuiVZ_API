@@ -17,14 +17,12 @@ define("ADM_SECRET", "b14f6c79f8ac"); // Secret key to hash with the UUID if the
 
 // Allowed origins
 $origin_whitelist = Array(
-  "http://localhost:".$_SERVER["SERVER_PORT"] => true,
   "https://localhost:".$_SERVER["SERVER_PORT"] => true,
+  "https://app.drawfunction.com" => "true",
   // "https://[url]" => true,
   //Testing
-  "http://localhost:3000"=>true,
-  "http://localhost"=>true,
-  "http://quivz" => true,
-  "https://192.168.1.104:3000" => true
+  //"http://localhost:3000"=>true,
+  //"http://localhost"=>true,
 );
 
 // Restrict and privilages to those only on the following IPs
