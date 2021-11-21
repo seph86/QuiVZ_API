@@ -30,7 +30,9 @@ if (isset($_ENV["API_DEBUG"]) && $_ENV["API_DEBUG"] != false) {
   session_save_path(getcwd()."/temp/");
   header("Access-Control-Allow-Origin: *");
 } else {
-  //TODO Production settings
+  session_save_path(getcwd()."/sess/");
+  if (!file_exists(getcwd()."/sess/")) mkdir(getcwd()."/sess/");
+  header("Access-Control-Allow-Origin: https://app.drawfunction.com");
 }
 
 // Reject if no token is used

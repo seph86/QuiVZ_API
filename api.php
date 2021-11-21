@@ -33,7 +33,7 @@ if (isset($_ENV["API_DEBUG"]) && $_ENV["API_DEBUG"] == "true") {
 } else {
 
   // PRDUCTION
-  // TODO: Set prod mode here
+  header("Access-Control-Allow-Origin: https://app.drawfunction.com");
 
 }
 
@@ -128,7 +128,7 @@ $quizDB = new PDO($_ENV["quiz_db"], $username, $password);
 
 // Construct schema if it doesn't already exist
 if (!table_exists($quizDB, "users")) {
-  $quizDB->query("CREATE TABLE users (ID integer primary key autoincrement, uuid text, password text, admin tinyint);");
+  $quizDB->query("CREATE TABLE users (ID integer primary key autoincrement, uuid text, password text, admin tinyint, token text);");
 }
 
 // Check that there has been a API request
