@@ -159,8 +159,6 @@ while(true) {
   // if connection closed then we quit
   if ( connection_aborted() || connection_status() != 0) {
 
-    // error_log("connection ended===============");
-
     // Clean connection data
     $shared->activeGame = null;
 

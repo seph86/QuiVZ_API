@@ -55,7 +55,7 @@ $functions["user"]["login"] = function(&$db) {
   if (!isset($_POST["uuid"])) send_data(BAD, "UUID required");
 
   // Get user from the database
-  $query = $db->prepare("select password,admin from users where uuid = :uuid"); 
+  $query = $db->prepare("select password,admin from users where uuid = :uuid");
   $query->bindParam(":uuid", $_POST["uuid"]);
   $query->execute();
 

@@ -17,7 +17,7 @@ port="8080"
 protocol="http://"
 verbose=false
 output=false
-skip_ratelimit=false
+ratelimit=false
 curl_data=""
 token=""
 pass2="StrongPassword99"
@@ -52,9 +52,10 @@ help() {
   echo "-v        : Print more sh*t"
   echo "-r        : Print json responses"
   echo "-D        : Destroy token file after script is complete"
-  echo "-sr       : Skip rate limiting"
+  echo "-rl       : Test Rate Limit"
   echo "-l        : Login then exit"
   echo "-L        : Logout then exit"
+  echo "-R        : Register account"
   echo "-d [data] : Set curl data (set before -c)"
   echo "-c [cmd]  : Test single api command [cmd]"
   echo "-t        : Are you a teapot?"
@@ -82,7 +83,7 @@ test() {
   if [[ $verbose = "true" || $output = "true" ]]; then echo "" ; fi
 
   # Safety to not trigger the rate limiter.
-  sleep 0.5
+  sleep 1
 }
 
 # Process args
@@ -120,8 +121,8 @@ while (( $# )); do
       curl $([[ $verbose = "true" ]] && echo "-v") -s --header Origin:$protocol$host:$port $protocol$host:$port/teapot/
       exit 418
       ;;
-    -sr)
-      skip_ratelimit=true
+    -rl)
+      ratelimit=true
       ;;
     -l)
       if [ -f $token_file ]; then
@@ -136,6 +137,13 @@ while (( $# )); do
     -L)
       curl $([[ $verbose = "true" ]] && echo "-v") -s --header Origin:$protocol$host:$port $protocol$host:$port/user/logout/ -d "token=$token"
       rm $token_file
+      exit 0;
+      ;;
+    -R)
+      curl $([[ $verbose = "true" ]] && echo "-v") -s --header Origin:$protocol$host:$port $protocol$host:$port/user/register/ -d "password=$2&password_confirm=$2" > $output_file
+      echo "-- Place these into your .settings file --"
+      echo -n "test_user=" && cat $output_file | grep -o '"UUID": *"[^"]*"' | grep -o '"[^"]*"$' | sed 's/\"//g'
+      echo "test_pass=$2"
       exit 0;
       ;;
     -d)
@@ -167,7 +175,7 @@ echo "-----------------------------------"
 # Test API integrity
 # -----------------------------------------------------------
 
-if [[ $skip_ratelimit == "false" ]]; then
+if [[ $ratelimit == "true" ]]; then
   # Test server rate limiting
   echo "Testing rate limiting..."
   $cmd > /dev/null
@@ -183,6 +191,11 @@ if [[ $skip_ratelimit == "false" ]]; then
   response=`$cmd`
   test 429 $response
   sleep 1
+  #cleanup
+  if [ -f $output_file ]; then
+    rm $output_file
+  fi
+  exit 0
 fi
 
 # Test origin
@@ -219,14 +232,9 @@ test 400 $($cmd/user/logout)
 echo "Testing change password, not logged in ..."
 test 400 $($cmd/user/newpassword)
 
-# Test searching for category when not logged in
-echo "Testing searching categories ..."
-test 401 $($cmd/category/search)
-
-# Test creating new category when not logged in
-echo "Testing creating a new category ..."
-test 401 $($cmd/category/create)
-
+# Test changing password, not logged in
+echo "Testing change password, not logged in ..."
+test 400 $($cmd/user/newpassword)
 
 
 # ----------------------------------------------
@@ -268,47 +276,6 @@ test 200 $($cmd/user/newpassword -d "oldpassword=$pass&newpassword=$pass2")
 # Changing password back
 echo "Setting password back to old"
 $cmd"/user/newpassword" -d "oldpassword=$pass2&newpassword=$pass" > /dev/null
-
-# Test searching for category without entering a search param
-echo "Testing searching for category with null data ..."
-test 400 $($cmd/category/search)
-
-# Test again but with data
-echo "Testing searching for category with data ..."
-test 200 $($cmd/category/search -d "query=test")
-
-# Test creating a new category without a name
-echo "Testing creating a new category, no name ..."
-test 400 $($cmd/category/create)
-
-# Test creating a new category with an invalid name
-echo "Testing creating a new category, invalid name ..."
-test 400 $($cmd/category/create -d "name=A!@#  ^  --B")
-
-# Test creating a new category with a name that has too many characters
-echo "Testing creating a new category, too many characters in name ..."
-test 400 $($cmd/category/create -d "name=NHZTZX0XQL5iulSmvFkCvN15KWbEU2akqWt4qTB4HLLLH1pT4JESmMpGnvfMi1Lr71IJyZEc75i860rA4z0TGsSO0tCu8jvmDoiXtxGqb2EiSqtkHogInPVqE7DpbuaET9hSuyFGQ750hx8p2uhTqbJ")
-
-# Test creating a new category
-echo "Testing creating a new category ..."
-test 200 $($cmd/category/create -d "name=testing1234554321")
-
-# Test creating a new category with a name that already exists
-echo "Creating same category again ..."
-test 400 $($cmd/category/create -d "name=testing1234554321")
-
-# Testing admin, delete category
-echo "Deleting a category that exists ..."
-test 200 $($cmd/category/delete -d "name=testing1234554321")
-
-# Testing admin, delete a category that doesnt exist
-echo "Deleting a category that doesnt exist ..."
-test 400 $($cmd/category/delete -d "name=testing1234554321")
-
-# Testing admin, delete a category with no input
-echo "Deleting a category with no input ..."
-test 400 $($cmd/category/delete)
-
 
 # Test logout, user logged in
 echo "Testing logout ..."

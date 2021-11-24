@@ -45,7 +45,7 @@ include_once "global_functions.php";
 include "logger.php";
 
 // Rate limit requests from a single ip to 4 requests per second by counting log requests
-if (logger::getInstance()->getRequestcount() > 4) send_data(TOOMANY);
+if (logger::getInstance()->getRequestcount() > 2) send_data(TOOMANY);
 
 // Check that there has been a API request
 if (!isset($input[0])) {
@@ -134,7 +134,7 @@ $quizDB = new PDO($_ENV["quiz_db"], $username, $password);
 
 // Construct schema if it doesn't already exist
 if (!table_exists($quizDB, "users")) {
-  $quizDB->query("CREATE TABLE users (uuid varchar(32) primary key, password text, admin tinyint, token text);");error_log(var_export($quizDB->errorInfo(), true));
+  $quizDB->query("CREATE TABLE users (uuid varchar(64) primary key, password text, admin tinyint, token text);");
 }
 
 // We only want logged in users to be able to do anything, so unless they are checking logged in, logging in, or registring can they continue
