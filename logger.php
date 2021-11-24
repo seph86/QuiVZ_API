@@ -1,9 +1,16 @@
 <?php 
 
+include_once "global_functions.php";
+
 class logger {
 
   private $pdo;
   private $LastID;
+
+  static private $incrementType = [
+    "mysql"=>"AUTO_INCREMENT",
+    "sqlite"=>"autoincrement",
+  ];
 
   public static $instance = null;
 
@@ -27,7 +34,13 @@ class logger {
 
       // Construct schema if it does not exist
       if (!table_exists($this->pdo, "log")) {
-        $this->pdo->query("CREATE TABLE log (id integer primary key autoincrement, timestamp integer not null, IP text not null, action text, post text, session text, userID text, responseCode integer, responseData text);");
+        // Check we can use this sql datastore
+        if (!isset(Logger::$incrementType[ $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) ])) {
+          error_log("This Log SQL datastore is not supported. - ".$this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME));
+          exit(1);
+        }
+        $incrementor = Logger::$incrementType[ $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) ];
+        $this->pdo->query("CREATE TABLE log (ID integer primary key ".$incrementor.", timestamp integer not null, IP text not null, action text, post text, session text, userID text, responseCode integer, responseData text, responseLine text);");
       }
 
       $query = $this->pdo->prepare("insert into log (timestamp, IP, action, post, session, userID) values (:now, :IP, :action, :post, :session, :userID);");
@@ -67,9 +80,10 @@ class logger {
    * Append response code to log for current action.
    * This is done at the end of send_data() function
    */
-  public function appendResponse($code):void {
-    $query = $this->pdo->prepare("update log set responseCode = :code where ID = ".$this->LastID);
-    $query->bindParam(":code", $code);
+  public function appendResponse($code, $from):void {
+    $query = $this->pdo->prepare("update log set responseCode = :code, responseLine = :line where ID = ".$this->LastID);
+    $query->bindParam(":code", $code, pdo::PARAM_INT);
+    $query->bindParam(":line", $from);
     $query->execute();
   }
 

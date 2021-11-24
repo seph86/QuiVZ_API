@@ -11,8 +11,9 @@ if (file_exists("./.settings")) {
   foreach( $lines as $num => $line) {
     if (!preg_match("/^#/", $line) && preg_match("/^\w+=\w+/", $line)){ // Add anything this is valid
       $line = preg_replace("/\n|\r|\ /", "", "$line"); // Remove newlines and spaces, then add to env
-      $temp = explode("=",$line);
-      $_ENV[$temp[0]] = $temp[1];
+      $key = substr($line, 0, strpos($line, "="));
+      $value = substr($line, strpos($line, "=") + 1);
+      $_ENV[$key] = $value;
     }
   }
   $temp = null;$line = null; // Clear temp data
@@ -38,14 +39,14 @@ if (isset($_ENV["API_DEBUG"]) && $_ENV["API_DEBUG"] != false) {
 // Reject if no token is used
 if (!isset($_GET["token"])) {
   http_response_code(403);
-  logger::getInstance()->appendResponse(403);
+  logger::getInstance()->appendResponse(403, "sse.php:".__LINE__);
   exit();
 }
 
 // If token is not valid exit
 if (!file_exists(session_save_path()."sess_".$_GET["token"])) {
   http_response_code(403);
-  logger::getInstance()->appendResponse(403);
+  logger::getInstance()->appendResponse(403, "sse.php:".__LINE__);
   logger::getInstance()->appendData("invalid token");
   exit();
 }

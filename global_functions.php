@@ -12,22 +12,22 @@ define("TIMEOUT", 408);
 define("TOOMANY", 429);
 define("BROKEN", 500);
 
-// Misc
-define("ADM_SECRET", "b14f6c79f8ac"); // Secret key to hash with the UUID if the user is admin, result is stored client side
+// Secret key to hash with the UUID if the user is admin, result is stored client side.
+// This does not give user admin rights if they enable this on client side but really only shows
+// available options that admins can do.  This needs to be moved to a config option for both here
+// and the react front end.
+define("ADM_SECRET", "b14f6c79f8ac");
 
 // Allowed origins
 $origin_whitelist = Array(
-  "https://localhost:".$_SERVER["SERVER_PORT"] => true,
   "https://app.drawfunction.com" => "true",
   // "https://[url]" => true,
-  //Testing
-  //"http://localhost:3000"=>true,
-  //"http://localhost"=>true,
 );
 
 // Restrict and privilages to those only on the following IPs
 $admin_ip_whitelist = Array(
-  "127.0.0.1"=>true
+  "127.0.0.1"=>true,
+  // "[ip]"=>true, For example an internal vpn network 
 );
 
 
@@ -55,8 +55,13 @@ function send_data(int $code, string $message = "", $data = null) {
   // Create a temp array ready to be encoded into JSON
   $temp = ["message"=>$message];
 
+  // Save backtrace data to use later
+  $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+  $backtraceFile = explode("/", $backtrace[0]["file"]);
+  $backtraceLog = end($backtraceFile).":".$backtrace[0]["line"]; // end() uses array reference and doesn't like explode directly in there
+
   // Append response code to logger
-  logger::getInstance()->appendResponse($code);
+  logger::getInstance()->appendResponse($code, $backtraceLog);
 
   // If data is set append it to the JSON array
   // if ($data != null) {
@@ -67,7 +72,7 @@ function send_data(int $code, string $message = "", $data = null) {
   // Add debug information if enabled.  Only checking aginst False because
   // we only care if the environment variable is set, not what it's set too.
   if (isset($_ENV["API_DEBUG"]) && $_ENV["API_DEBUG"] == true ) {
-    $temp += ["backtrace"=>debug_backtrace()];
+    $temp += ["backtrace"=>debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)];
   }
 
   // Encode JSON data and send it

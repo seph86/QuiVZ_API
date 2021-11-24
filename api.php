@@ -9,8 +9,9 @@ if (file_exists("./.settings")) {
   foreach( $lines as $num => $line) {
     if (!preg_match("/^#/", $line) && preg_match("/^\w+=\w+/", $line)){ // Add anything this is valid
       $line = preg_replace("/\n|\r|\ /", "", "$line"); // Remove newlines and spaces, then add to env
-      $temp = explode("=",$line);
-      $_ENV[$temp[0]] = $temp[1];
+      $key = substr($line, 0, strpos($line, "="));
+      $value = substr($line, strpos($line, "=") + 1);
+      $_ENV[$key] = $value;
     }
   }
 
@@ -38,13 +39,18 @@ if (isset($_ENV["API_DEBUG"]) && $_ENV["API_DEBUG"] == "true") {
 }
 
 // Include some multipurpose functions and definitions
-include "global_functions.php";
+include_once "global_functions.php";
 
 // Include and start the logging system
 include "logger.php";
 
 // Rate limit requests from a single ip to 4 requests per second by counting log requests
-if (logger::getInstance()->getRequestcount() > 4) send_data(TOOMANY);  
+if (logger::getInstance()->getRequestcount() > 4) send_data(TOOMANY);
+
+// Check that there has been a API request
+if (!isset($input[0])) {
+  send_data(BAD);
+}
 
 // We need to start the session engine early because we need that information asap
 ini_set("session.use_cookies", "0"); // We're going to work with tokens in localstorage. Not cookies
@@ -104,10 +110,10 @@ if (isset($_SESSION["request_reset_timestamp"])) {
   $_SESSION["request_reset_timestamp"] = strtotime("+1 day", time());
 }
 
-
 // Limit requests from only specific origins
 if (!isset($_SERVER["HTTP_ORIGIN"]) || !array_key_exists($_SERVER["HTTP_ORIGIN"], $origin_whitelist)){
-  send_data(BAD);
+  if (!isset($_ENV["API_DEBUG"]) || $_ENV["API_DEBUG"] != true )
+    send_data(BAD);
 } 
 
 
@@ -128,12 +134,7 @@ $quizDB = new PDO($_ENV["quiz_db"], $username, $password);
 
 // Construct schema if it doesn't already exist
 if (!table_exists($quizDB, "users")) {
-  $quizDB->query("CREATE TABLE users (ID integer primary key autoincrement, uuid text, password text, admin tinyint, token text);");
-}
-
-// Check that there has been a API request
-if (!isset($input[0])) {
-  send_data(BAD);
+  $quizDB->query("CREATE TABLE users (uuid varchar(32) primary key, password text, admin tinyint, token text);");error_log(var_export($quizDB->errorInfo(), true));
 }
 
 // We only want logged in users to be able to do anything, so unless they are checking logged in, logging in, or registring can they continue

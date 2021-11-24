@@ -64,7 +64,6 @@ $functions["user"]["login"] = function(&$db) {
   // Duplicate found
   if (isset($result[1])) {
     // Panic 
-    // TODO: add functionality to alert system admin
     error_log("FATAL ERROR: Duplicate uuid found. Exiting. UUID: ".$_POST["uuid"]);
     die();
   }

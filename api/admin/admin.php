@@ -46,7 +46,6 @@ function setAdmin(&$db, $admin, &$input) {
     }
   }
 
-  // TODO: Figure out how to make current active session with this uuid admin.
   $query = $db->prepare("update users set admin = " . intval($admin) . " where uuid = :uuid");
   $query->bindParam(":uuid", $input[1]);
   $query->execute();
