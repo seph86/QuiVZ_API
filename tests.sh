@@ -53,7 +53,7 @@ help() {
   echo "-r        : Print json responses"
   echo "-D        : Destroy token file after script is complete"
   echo "-sr       : Skip rate limiting"
-  echo "-l        : Login (best used with -k) then exit"
+  echo "-l        : Login then exit"
   echo "-L        : Logout then exit"
   echo "-d [data] : Set curl data (set before -c)"
   echo "-c [cmd]  : Test single api command [cmd]"

@@ -10,6 +10,6 @@ quiz_db=sqlite:./.quiz.db
 # log_db_username=user
 # log_db_password=password
 
-# Test script settings
+# Test script settings you will need to create the account first
 # test_user=[REPLACE ME]
 # test_pass=[REPLACE ME]

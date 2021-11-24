@@ -3,3 +3,4 @@ temp/
 php_errors.log
 .*
 vendor/
+Screenshots/
